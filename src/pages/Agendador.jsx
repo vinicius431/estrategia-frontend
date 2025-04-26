@@ -46,7 +46,6 @@ export default function Agendador() {
     formData.append("data", data);
     formData.append("imagem", imagem);
     formData.append("status", "agendado");
-    formData.append("criadoEm", new Date().toISOString());
 
     try {
       const res = await fetch(`${API_URL}/agendamentos`, {
