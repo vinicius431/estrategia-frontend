@@ -94,9 +94,6 @@ export default function DashboardLayout() {
       label: "Meus Conteúdos", to: "/dashboard/meus-conteudos", icon: <LayoutGrid size={18} />
     },
     {
-      label: "Feed", to: "/dashboard/feed", icon: <LayoutGrid size={18} />
-    },
-    {
       label: "Planos", to: "/dashboard/planos", icon: <BadgeDollarSign size={18} />, badge: planoAtivo
     },
     {

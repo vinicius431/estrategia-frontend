@@ -12,11 +12,17 @@ export default function MeusConteudos() {
       try {
         const res = await fetch(`${API_URL}/agendamentos`, {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+
         const data = await res.json();
-        setConteudos(data.reverse());
+
+        if (Array.isArray(data)) {
+          setConteudos(data.reverse());
+        } else {
+          console.error("Resposta inesperada do servidor:", data);
+        }
       } catch (err) {
         console.error("Erro ao buscar conteúdos:", err);
       }
@@ -33,7 +39,7 @@ export default function MeusConteudos() {
       const res = await fetch(`${API_URL}/agendamentos/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 

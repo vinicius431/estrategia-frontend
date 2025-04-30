@@ -21,6 +21,7 @@ export default function Agendador() {
   const [imagem, setImagem] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
   const [mensagem, setMensagem] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setTitulo(tituloParam);
@@ -38,6 +39,9 @@ export default function Agendador() {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
+    setMensagem("");
+
     const formData = new FormData();
     formData.append("titulo", titulo);
     formData.append("descricao", descricao);
@@ -56,23 +60,31 @@ export default function Agendador() {
         body: formData,
       });
 
-      if (res.ok) {
-        setMensagem("✅ Agendamento realizado com sucesso!");
-        setStep(1);
-        setTitulo("");
-        setDescricao("");
-        setCta("");
-        setHashtags("");
-        setData("");
-        setImagem(null);
-        setPreviewImg(null);
-      } else {
-        const erro = await res.json();
-        setMensagem("❌ Erro ao agendar: " + erro.erro);
+      const text = await res.text();
+
+      try {
+        const data = JSON.parse(text);
+        if (res.ok) {
+          setMensagem("✅ Agendamento realizado com sucesso!");
+          setStep(1);
+          setTitulo("");
+          setDescricao("");
+          setCta("");
+          setHashtags("");
+          setData("");
+          setImagem(null);
+          setPreviewImg(null);
+        } else {
+          setMensagem("❌ Erro ao agendar: " + (data?.erro || "Erro desconhecido."));
+        }
+      } catch (jsonErr) {
+        setMensagem("❌ Erro inesperado: " + text);
       }
     } catch (err) {
       console.error(err);
       setMensagem("❌ Erro ao conectar com o servidor.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -165,6 +177,7 @@ export default function Agendador() {
             <button
               onClick={() => setStep(step - 1)}
               className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              disabled={loading}
             >
               Voltar
             </button>
@@ -173,15 +186,19 @@ export default function Agendador() {
             <button
               onClick={() => setStep(step + 1)}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              disabled={loading}
             >
               Próximo
             </button>
           ) : (
             <button
               onClick={handleSubmit}
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+              className={`px-6 py-2 rounded text-white transition ${
+                loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+              }`}
+              disabled={loading}
             >
-              Agendar
+              {loading ? "Agendando..." : "Agendar"}
             </button>
           )}
         </div>
