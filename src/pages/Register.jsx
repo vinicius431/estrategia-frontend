@@ -26,13 +26,20 @@ export default function Register() {
         body: JSON.stringify({ nome, email, senha }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Resposta inválida do servidor.");
+      }
 
       if (res.ok) {
         setMensagem("✅ Cadastro realizado com sucesso!");
-        setTimeout(() => navigate("/"), 1500); // redireciona pro login
+        setTimeout(() => navigate("/"), 1500);
       } else {
-        setMensagem("❌ " + data.erro);
+        setMensagem("❌ " + (data?.erro || "Erro desconhecido."));
       }
     } catch (err) {
       console.error(err);

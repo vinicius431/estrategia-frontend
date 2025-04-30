@@ -18,10 +18,16 @@ export default function Login() {
         body: JSON.stringify({ email, senha }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch (jsonErr) {
+        throw new Error("Resposta inválida do servidor.");
+      }
 
       if (res.ok) {
-        // Salva dados no localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("planoAtivo", data.usuario.plano);
         localStorage.setItem("usuario", JSON.stringify(data.usuario));
@@ -29,7 +35,7 @@ export default function Login() {
         setMensagem("✅ Login realizado com sucesso!");
         setTimeout(() => navigate("/dashboard"), 1000);
       } else {
-        setMensagem("❌ " + data.erro);
+        setMensagem("❌ " + (data?.erro || "Erro desconhecido."));
       }
     } catch (err) {
       console.error(err);
