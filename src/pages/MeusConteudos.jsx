@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 
 export default function MeusConteudos() {
   const [conteudos, setConteudos] = useState([]);
-  const [filtro, setFiltro] = useState("");
+  const [filtroTexto, setFiltroTexto] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState("todos");
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchAgendados = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/agendamentos`, {
+        const res = await fetch(`${API_URL}/agendamentos`, {
           headers: {
             Authorization: localStorage.getItem("token"),
           },
@@ -27,7 +30,7 @@ export default function MeusConteudos() {
     if (!confirmacao) return;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/agendamentos/${id}`, {
+      const res = await fetch(`${API_URL}/agendamentos/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -46,23 +49,38 @@ export default function MeusConteudos() {
     }
   };
 
-  const filtrados = conteudos.filter((item) =>
-    item.titulo.toLowerCase().includes(filtro.toLowerCase())
-  );
+  const filtrados = conteudos
+    .filter((item) =>
+      item.titulo?.toLowerCase().includes(filtroTexto.toLowerCase())
+    )
+    .filter((item) =>
+      filtroStatus === "todos" ? true : item.status === filtroStatus
+    );
 
   return (
-    <div>
+    <div className="p-6">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-bold">
           Meus Conteúdos ({filtrados.length})
         </h1>
-        <input
-          type="text"
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-          placeholder="Filtrar por título..."
-          className="px-4 py-2 border rounded-md w-full sm:w-64 text-sm"
-        />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            value={filtroTexto}
+            onChange={(e) => setFiltroTexto(e.target.value)}
+            placeholder="Filtrar por título..."
+            className="px-4 py-2 border rounded-md w-full sm:w-64 text-sm"
+          />
+          <select
+            value={filtroStatus}
+            onChange={(e) => setFiltroStatus(e.target.value)}
+            className="px-3 py-2 border rounded-md text-sm"
+          >
+            <option value="todos">Todos</option>
+            <option value="agendado">Agendados</option>
+            <option value="postado">Postados</option>
+          </select>
+        </div>
       </div>
 
       {filtrados.length === 0 ? (
@@ -72,25 +90,41 @@ export default function MeusConteudos() {
           {filtrados.map((item) => (
             <div
               key={item._id}
-              className="bg-white rounded-lg shadow-md overflow-hidden border"
+              className="bg-white border rounded-lg shadow p-4 space-y-3"
             >
-              {item.imagem && (
+              {item.imagem ? (
                 <img
                   src={item.imagem}
                   alt="Post"
-                  className="w-full h-48 object-cover"
+                  className="w-full h-40 object-cover rounded"
                 />
+              ) : (
+                <div className="h-40 flex items-center justify-center bg-gray-100 text-gray-500 text-sm rounded">
+                  Sem imagem
+                </div>
               )}
-              <div className="p-4">
-                <h2 className="text-lg font-bold text-gray-800 mb-2">
-                  {item.titulo}
-                </h2>
-                <p className="text-sm text-gray-500 mb-1">
-                  Publicação em: {item.data}
+              <div>
+                <h3 className="text-lg font-semibold">{item.titulo}</h3>
+                <p className="text-sm text-gray-500">
+                  Publicar em: {new Date(item.data).toLocaleDateString()}
                 </p>
-                {item.descricao && (
-                  <p className="text-sm text-gray-600 mb-3">{item.descricao}</p>
-                )}
+                <p className="text-sm text-gray-600 whitespace-pre-line">
+                  {item.descricao?.length > 120
+                    ? item.descricao.substring(0, 120) + "..."
+                    : item.descricao}
+                </p>
+              </div>
+
+              <div className="flex justify-between items-center pt-2">
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    item.status === "agendado"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
+                  {item.status}
+                </span>
                 <button
                   onClick={() => handleExcluir(item._id)}
                   className="text-red-600 text-sm hover:underline"
