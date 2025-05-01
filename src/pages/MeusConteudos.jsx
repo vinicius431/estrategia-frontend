@@ -126,6 +126,7 @@ export default function MeusConteudos() {
                 <h3 className="text-lg font-semibold">{item.titulo}</h3>
                 <p className="text-sm text-gray-500">
                   Publicar em: {new Date(item.data).toLocaleDateString()}
+                  {item.hora && ` às ${item.hora}`}
                 </p>
                 <p className="text-sm text-gray-600 whitespace-pre-line">
                   {item.descricao?.length > 120
