@@ -88,6 +88,22 @@ export default function Agendador() {
     }
   };
 
+  const renderPreview = () => {
+    if (!previewImg) return null;
+
+    if (imagem?.type?.startsWith("video")) {
+      return (
+        <video
+          src={previewImg}
+          controls
+          className="rounded mb-4 max-w-xs"
+        />
+      );
+    }
+
+    return <img src={previewImg} alt="Preview" className="rounded mb-4 max-w-xs" />;
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -125,7 +141,7 @@ export default function Agendador() {
       case 2:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold mb-2">2️⃣ Data e Imagem</h2>
+            <h2 className="text-xl font-bold mb-2">2️⃣ Data e Mídia</h2>
             <input
               type="date"
               value={data}
@@ -133,10 +149,8 @@ export default function Agendador() {
               className="w-full px-4 py-2 rounded border text-black"
               required
             />
-            <input type="file" accept="image/*" onChange={handleImagem} />
-            {previewImg && (
-              <img src={previewImg} alt="preview" className="max-w-xs rounded shadow-md mt-2" />
-            )}
+            <input type="file" accept="image/*,video/*" onChange={handleImagem} />
+            {previewImg && renderPreview()}
           </div>
         );
       case 3:
@@ -144,7 +158,7 @@ export default function Agendador() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold mb-2">3️⃣ Preview Final</h2>
             <div className="bg-white rounded-lg shadow p-4 text-black">
-              {previewImg && <img src={previewImg} alt="Preview" className="rounded mb-4" />}
+              {renderPreview()}
               <h3 className="text-lg font-bold">{titulo}</h3>
               <p className="mb-2">{descricao}</p>
               {cta && <p className="italic mb-1">👉 {cta}</p>}

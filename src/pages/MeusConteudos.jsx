@@ -63,6 +63,29 @@ export default function MeusConteudos() {
       filtroStatus === "todos" ? true : item.status === filtroStatus
     );
 
+  const renderMedia = (url) => {
+    if (!url) return (
+      <div className="h-40 flex items-center justify-center bg-gray-100 text-gray-500 text-sm rounded">
+        Sem mídia
+      </div>
+    );
+
+    const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i);
+    return isVideo ? (
+      <video
+        src={url}
+        controls
+        className="w-full h-40 object-cover rounded"
+      />
+    ) : (
+      <img
+        src={url}
+        alt="Post"
+        className="w-full h-40 object-cover rounded"
+      />
+    );
+  };
+
   return (
     <div className="p-6">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -98,17 +121,7 @@ export default function MeusConteudos() {
               key={item._id}
               className="bg-white border rounded-lg shadow p-4 space-y-3"
             >
-              {item.imagem ? (
-                <img
-                  src={item.imagem}
-                  alt="Post"
-                  className="w-full h-40 object-cover rounded"
-                />
-              ) : (
-                <div className="h-40 flex items-center justify-center bg-gray-100 text-gray-500 text-sm rounded">
-                  Sem imagem
-                </div>
-              )}
+              {renderMedia(item.imagem)}
               <div>
                 <h3 className="text-lg font-semibold">{item.titulo}</h3>
                 <p className="text-sm text-gray-500">
