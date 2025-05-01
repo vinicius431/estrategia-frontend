@@ -18,6 +18,7 @@ export default function Agendador() {
   const [cta, setCta] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [data, setData] = useState("");
+  const [hora, setHora] = useState(""); // NOVO
   const [imagem, setImagem] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
   const [mensagem, setMensagem] = useState("");
@@ -48,6 +49,7 @@ export default function Agendador() {
     formData.append("cta", cta);
     formData.append("hashtags", hashtags);
     formData.append("data", data);
+    formData.append("hora", hora); // NOVO
     formData.append("imagem", imagem);
     formData.append("status", "agendado");
 
@@ -72,6 +74,7 @@ export default function Agendador() {
           setCta("");
           setHashtags("");
           setData("");
+          setHora("");
           setImagem(null);
           setPreviewImg(null);
         } else {
@@ -141,11 +144,18 @@ export default function Agendador() {
       case 2:
         return (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold mb-2">2️⃣ Data e Mídia</h2>
+            <h2 className="text-xl font-bold mb-2">2️⃣ Data, Hora e Mídia</h2>
             <input
               type="date"
               value={data}
               onChange={(e) => setData(e.target.value)}
+              className="w-full px-4 py-2 rounded border text-black"
+              required
+            />
+            <input
+              type="time"
+              value={hora}
+              onChange={(e) => setHora(e.target.value)}
               className="w-full px-4 py-2 rounded border text-black"
               required
             />
@@ -165,7 +175,9 @@ export default function Agendador() {
               {hashtags && (
                 <p className="text-blue-600 text-sm font-mono">{hashtags}</p>
               )}
-              <p className="text-xs text-gray-500 mt-2">Publicar em: {data || "sem data"}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                Publicar em: {data || "sem data"} às {hora || "sem hora"}
+              </p>
             </div>
           </div>
         );
