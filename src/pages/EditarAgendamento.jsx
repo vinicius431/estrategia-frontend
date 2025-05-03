@@ -13,10 +13,12 @@ export default function EditarAgendamento() {
   const [hashtags, setHashtags] = useState("");
   const [data, setData] = useState("");
   const [hora, setHora] = useState("");
+  const [imagemAtual, setImagemAtual] = useState("");
+  const [novaImagem, setNovaImagem] = useState(null);
   const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
-    const buscarAgendamento = async () => {
+    const buscar = async () => {
       try {
         const res = await fetch(`${API_URL}/agendamentos`, {
           headers: {
@@ -24,47 +26,57 @@ export default function EditarAgendamento() {
           },
         });
         const data = await res.json();
-        const encontrado = data.find((item) => item._id === id);
-        if (encontrado) {
-          setTitulo(encontrado.titulo || "");
-          setDescricao(encontrado.descricao || "");
-          setCta(encontrado.cta || "");
-          setHashtags(encontrado.hashtags || "");
-          setData(encontrado.data || "");
-          setHora(encontrado.hora || "");
+        const agendamento = data.find((item) => item._id === id);
+        if (agendamento) {
+          setTitulo(agendamento.titulo || "");
+          setDescricao(agendamento.descricao || "");
+          setCta(agendamento.cta || "");
+          setHashtags(agendamento.hashtags || "");
+          setData(agendamento.data || "");
+          setHora(agendamento.hora || "");
+          setImagemAtual(agendamento.imagem || "");
         } else {
           setMensagem("Agendamento não encontrado.");
         }
       } catch (err) {
         console.error(err);
-        setMensagem("Erro ao carregar agendamento.");
+        setMensagem("Erro ao carregar dados.");
       }
     };
-
-    buscarAgendamento();
+    buscar();
   }, [id]);
 
   const handleSalvar = async () => {
     try {
+      const formData = new FormData();
+      formData.append("titulo", titulo);
+      formData.append("descricao", descricao);
+      formData.append("cta", cta);
+      formData.append("hashtags", hashtags);
+      formData.append("data", data);
+      formData.append("hora", hora);
+      if (novaImagem) {
+        formData.append("imagem", novaImagem);
+      }
+
       const res = await fetch(`${API_URL}/agendamentos/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ titulo, descricao, cta, hashtags, data, hora }),
+        body: formData,
       });
 
       if (res.ok) {
         setMensagem("✅ Alterações salvas com sucesso!");
-        setTimeout(() => navigate("/meus-conteudos"), 1500);
+        setTimeout(() => navigate("/dashboard/meus-conteudos"), 1500);
       } else {
         const erro = await res.json();
-        setMensagem("❌ Erro ao salvar: " + (erro.erro || "Erro desconhecido."));
+        setMensagem("❌ Erro ao salvar: " + (erro.erro || "Erro desconhecido"));
       }
     } catch (err) {
       console.error(err);
-      setMensagem("❌ Erro ao conectar com o servidor.");
+      setMensagem("❌ Erro de conexão.");
     }
   };
 
@@ -116,6 +128,28 @@ export default function EditarAgendamento() {
           onChange={(e) => setHora(e.target.value)}
           className="w-full px-4 py-2 rounded border text-black"
         />
+
+        {imagemAtual && (
+          <div>
+            <label className="block text-sm font-semibold mb-1">Mídia Atual:</label>
+            {imagemAtual.match(/\.(mp4|webm|mov|avi)$/i) ? (
+              <video src={imagemAtual} controls className="w-full rounded max-h-64" />
+            ) : (
+              <img src={imagemAtual} alt="Atual" className="w-full rounded max-h-64 object-contain" />
+            )}
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-semibold mb-1 mt-2">Nova imagem ou vídeo (opcional):</label>
+          <input
+            type="file"
+            accept="image/*,video/*"
+            onChange={(e) => setNovaImagem(e.target.files[0])}
+            className="w-full"
+          />
+        </div>
+
         <button
           onClick={handleSalvar}
           className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
