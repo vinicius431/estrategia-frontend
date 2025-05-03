@@ -110,7 +110,7 @@ export default function DashboardLayout() {
         {menuAberto ? <X /> : <Menu />}
       </button>
 
-      <aside className={`fixed z-20 inset-y-0 left-0 w-64 bg-[#0d1b25] text-white p-6 transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${menuAberto ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed z-20 inset-y-0 left-0 w-64 bg-[#0d1b25] text-white p-6 shadow-lg transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${menuAberto ? "translate-x-0" : "-translate-x-full"}`}>
         <h2 className="text-2xl font-bold mb-8">EstrategIA</h2>
         <nav className="space-y-3">
           {navItems.map((item) => (
@@ -122,7 +122,7 @@ export default function DashboardLayout() {
                 setMenuAberto(false);
               }}
               className={`w-full text-left flex items-center justify-between px-3 py-2 rounded-md transition ${
-                location.pathname === item.to ? "bg-blue-600" : "hover:bg-blue-600"
+                location.pathname === item.to ? "bg-blue-600" : "hover:bg-blue-500/70"
               } ${item.disabled ? "pointer-events-none opacity-40" : ""}`}
             >
               <div className="flex items-center gap-2">
@@ -143,10 +143,13 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      <main className="flex-1 bg-white p-8 md:ml-64 w-full overflow-y-auto">
+      <main className="flex-1 bg-white p-6 md:ml-64 w-full overflow-y-auto overflow-x-hidden transition-all duration-300">
         {localStorage.getItem("usuario") && (
           <div className="flex justify-end mb-4">
-            <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full shadow text-sm text-gray-800 font-medium">
+            <div
+              className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full shadow text-sm text-gray-800 font-medium"
+              title={JSON.parse(localStorage.getItem("usuario")).nome}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9.004 9.004 0 0112 15c2.21 0 4.21.806 5.879 2.136M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>

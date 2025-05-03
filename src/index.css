@@ -6,3 +6,23 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+/* Scroll suave para UX fluida */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Barra de rolagem customizada (Chrome, Edge, Opera) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* slate-300 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

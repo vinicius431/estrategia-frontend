@@ -9,7 +9,14 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
+      colors: {
+        primary: '#1D4ED8',     // Azul principal
+        accent: '#22C55E',      // Verde sutil (para pequenos detalhes)
+        darkbg: '#0d1b25',      // Cor do menu lateral
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-animate"),
+  ],
 }

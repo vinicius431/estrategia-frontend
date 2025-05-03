@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,7 +13,7 @@ import Biblioteca from "./pages/Biblioteca";
 import Hashtags from "./pages/Hashtags";
 import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
-import EditarAgendamento from "./pages/EditarAgendamento"; // ✅ novo import
+import EditarAgendamento from "./pages/EditarAgendamento";
 
 import DashboardLayout from "./components/DashboardLayout";
 
@@ -24,6 +25,9 @@ function RotaProtegida({ children }) {
 function App() {
   return (
     <Router>
+      {/* Toaster global para exibir mensagens como "Copiado!" */}
+      <Toaster position="top-right" />
+
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -45,7 +49,7 @@ function App() {
           <Route path="hashtags" element={<Hashtags />} />
           <Route path="meus-conteudos" element={<MeusConteudos />} />
           <Route path="central" element={<CentralIdeias />} />
-          <Route path="editar/:id" element={<EditarAgendamento />} /> {/* ✅ nova rota */}
+          <Route path="editar/:id" element={<EditarAgendamento />} />
         </Route>
       </Routes>
     </Router>
