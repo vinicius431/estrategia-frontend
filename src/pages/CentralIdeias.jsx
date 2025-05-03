@@ -22,7 +22,10 @@ export default function CentralIdeias() {
   const navigate = useNavigate();
 
   const gerar = async () => {
-    if (!tema.trim()) return;
+    if (!tema.trim()) {
+      toast.error("Digite um tema para gerar ideias.");
+      return;
+    }
 
     setLoading(true);
     setMensagem("");
@@ -39,8 +42,12 @@ export default function CentralIdeias() {
 
       const data = await res.json();
       if (res.ok) {
-        setHeadlines(data.headlines || []);
-        setDescricoes(data.descricoes || []);
+        if ((data.headlines || []).length === 0) {
+          setMensagem("⚠️ A IA não retornou conteúdo utilizável. Tente outro tema.");
+        } else {
+          setHeadlines(data.headlines || []);
+          setDescricoes(data.descricoes || []);
+        }
       } else {
         setMensagem("❌ Erro: " + (data.erro || "Erro desconhecido"));
       }
@@ -58,6 +65,7 @@ export default function CentralIdeias() {
   };
 
   const usarNoAgendador = (titulo, descricao) => {
+    toast.success("Ideia enviada para o Agendador 🚀");
     const t = encodeURIComponent(titulo);
     const d = encodeURIComponent(descricao);
     navigate(`/dashboard/agendador?titulo=${t}&descricao=${d}`);
@@ -80,8 +88,9 @@ export default function CentralIdeias() {
         <button
           onClick={gerar}
           disabled={loading}
-          className="mt-3 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          className="mt-3 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition flex items-center gap-2"
         >
+          {loading && <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>}
           {loading ? "Gerando..." : "Gerar com IA"}
         </button>
       </div>
@@ -90,7 +99,7 @@ export default function CentralIdeias() {
         <div className="text-red-600 bg-red-100 p-3 rounded mb-4">{mensagem}</div>
       )}
 
-      {headlines.length > 0 && descricoes.length > 0 && (
+      {headlines.length > 0 && (
         <>
           <div className="grid md:grid-cols-2 gap-6 mb-10">
             {headlines.map((h, i) => (
