@@ -25,9 +25,7 @@ export default function Tutor() {
   const gerarIdeias = () => {
     if (!tema.trim()) return;
 
-    // Geração automática simulada (poderá ser IA futuramente)
     const ideia = tema.trim();
-
     setTitulo(`Como aplicar ${ideia} de forma eficaz`);
     setDescricao(`Descubra como usar ${ideia} no seu dia a dia para gerar mais resultados, engajamento e crescimento no digital.`);
     setCta(`Clique no link da bio e aprenda a dominar ${ideia}!`);
