@@ -12,6 +12,7 @@ import Biblioteca from "./pages/Biblioteca";
 import Hashtags from "./pages/Hashtags";
 import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
+import EditarAgendamento from "./pages/EditarAgendamento"; // ✅ novo import
 
 import DashboardLayout from "./components/DashboardLayout";
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="hashtags" element={<Hashtags />} />
           <Route path="meus-conteudos" element={<MeusConteudos />} />
           <Route path="central" element={<CentralIdeias />} />
+          <Route path="editar/:id" element={<EditarAgendamento />} /> {/* ✅ nova rota */}
         </Route>
       </Routes>
     </Router>
