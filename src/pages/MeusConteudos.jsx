@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function MeusConteudos() {
   const [conteudos, setConteudos] = useState([]);
@@ -7,6 +8,7 @@ export default function MeusConteudos() {
   const [modalUrl, setModalUrl] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAgendados = async () => {
@@ -145,9 +147,7 @@ export default function MeusConteudos() {
                 </span>
                 <div className="flex gap-3">
                   <button
-                    onClick={() =>
-                      window.location.href = `/agendador?titulo=${encodeURIComponent(item.titulo)}&descricao=${encodeURIComponent(item.descricao)}&cta=${encodeURIComponent(item.cta)}&hashtags=${encodeURIComponent(item.hashtags)}`
-                    }
+                    onClick={() => navigate(`/dashboard/editar/${item._id}`)}
                     className="text-blue-600 text-sm hover:underline"
                   >
                     Editar
