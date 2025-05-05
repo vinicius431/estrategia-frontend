@@ -18,7 +18,7 @@ export default function Agendador() {
   const [cta, setCta] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [data, setData] = useState("");
-  const [hora, setHora] = useState(""); // NOVO
+  const [hora, setHora] = useState("");
   const [imagem, setImagem] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
   const [mensagem, setMensagem] = useState("");
@@ -49,8 +49,8 @@ export default function Agendador() {
     formData.append("cta", cta);
     formData.append("hashtags", hashtags);
     formData.append("data", data);
-    formData.append("hora", hora); // NOVO
-    formData.append("imagem", imagem);
+    formData.append("hora", hora);
+    if (imagem) formData.append("imagem", imagem); // proteção
     formData.append("status", "agendado");
 
     try {
@@ -93,7 +93,6 @@ export default function Agendador() {
 
   const renderPreview = () => {
     if (!previewImg) return null;
-
     if (imagem?.type?.startsWith("video")) {
       return (
         <video
@@ -103,7 +102,6 @@ export default function Agendador() {
         />
       );
     }
-
     return <img src={previewImg} alt="Preview" className="rounded mb-4 max-w-xs" />;
   };
 
@@ -189,13 +187,11 @@ export default function Agendador() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Agendador de Conteúdo 📅</h1>
-
       {mensagem && (
         <div className="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800 border border-blue-300">
           {mensagem}
         </div>
       )}
-
       <div className="bg-[#0d1b25] p-6 rounded-xl shadow-md text-white space-y-6">
         {renderStep()}
         <div className="flex justify-between">
