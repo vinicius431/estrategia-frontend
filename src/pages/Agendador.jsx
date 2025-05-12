@@ -42,7 +42,7 @@ export default function Agendador() {
   const handleSubmit = async () => {
     setLoading(true);
     setMensagem("");
-
+  
     const formData = new FormData();
     formData.append("titulo", titulo);
     formData.append("descricao", descricao);
@@ -52,15 +52,21 @@ export default function Agendador() {
     formData.append("hora", hora);
     if (imagem) formData.append("imagem", imagem); // proteção
     formData.append("status", "agendado");
-
+  
+    // Log para verificar o conteúdo do FormData
+    for (let pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+  
     try {
       const res = await fetch(`${API_URL}/agendamentos`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: formData,
+        body: formData, // FormData define o Content-Type automaticamente
       });
+      
 
       const text = await res.text();
 
