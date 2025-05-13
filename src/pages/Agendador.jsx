@@ -50,7 +50,7 @@ export default function Agendador() {
     formData.append("hashtags", hashtags);
     formData.append("data", data);
     formData.append("hora", hora);
-    if (imagem) formData.append("imagem", imagem); // proteção
+    if (imagem) formData.append("imagem", imagem, imagem.name); 
     formData.append("status", "agendado");
   
     // Log para verificar o conteúdo do FormData
