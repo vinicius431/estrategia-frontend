@@ -44,19 +44,22 @@ export default function Agendador() {
     setMensagem("");
   
     const formData = new FormData();
-    formData.append("titulo", titulo);
-    formData.append("descricao", descricao);
-    formData.append("cta", cta);
-    formData.append("hashtags", hashtags);
-    formData.append("data", data);
-    formData.append("hora", hora);
-    if (imagem) formData.append("imagem", imagem, imagem.name); 
-    formData.append("status", "agendado");
-  
-    // Log para verificar o conteúdo do FormData
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
+formData.append("titulo", titulo);
+formData.append("descricao", descricao);
+formData.append("cta", cta);
+formData.append("hashtags", hashtags);
+formData.append("data", data);
+formData.append("hora", hora);
+formData.append("status", "agendado");
+
+if (imagem) {
+  formData.append("imagem", imagem, imagem.name); // Certifique-se de passar o nome
+}
+
+for (let pair of formData.entries()) {
+  console.log(`${pair[0]}: ${pair[1]}`);
+}
+
   
     try {
       const res = await fetch(`${API_URL}/agendamentos`, {
