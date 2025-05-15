@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const API_URL = "https://estrategia-backend-ss2a.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Agendador() {
   const location = useLocation();
