@@ -14,139 +14,141 @@ const fraseDoDia = frases[Math.floor(Math.random() * frases.length)];
 
 export default function CentralIdeias() {
   const [tema, setTema] = useState("");
-  const [headlines, setHeadlines] = useState([]);
-  const [descricoes, setDescricoes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [tituloGerado, setTituloGerado] = useState("");
+  const [descricaoGerada, setDescricaoGerada] = useState("");
+  const [loadingTitulo, setLoadingTitulo] = useState(false);
+  const [loadingDescricao, setLoadingDescricao] = useState(false);
   const [mensagem, setMensagem] = useState("");
-  const [preview, setPreview] = useState({ titulo: "", descricao: "" });
   const navigate = useNavigate();
 
-  const gerar = async () => {
+  const gerarTitulo = async () => {
     if (!tema.trim()) {
-      toast.error("Digite um tema para gerar ideias.");
+      toast.error("Digite um tema para gerar o título.");
       return;
     }
 
-    setLoading(true);
+    setLoadingTitulo(true);
     setMensagem("");
-    setHeadlines([]);
-    setDescricoes([]);
-    setPreview({ titulo: "", descricao: "" });
+    setTituloGerado("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/gerar-conteudo`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/gerar-headline`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tema }),
       });
-
       const data = await res.json();
       if (res.ok) {
-        if ((data.headlines || []).length === 0) {
-          setMensagem("⚠️ A IA não retornou conteúdo utilizável. Tente outro tema.");
-        } else {
-          setHeadlines(data.headlines || []);
-          setDescricoes(data.descricoes || []);
-        }
+        setTituloGerado(data.titulo || "");
       } else {
-        setMensagem("❌ Erro: " + (data.erro || "Erro desconhecido"));
+        setMensagem(data.erro || "Erro ao gerar título.");
       }
     } catch (err) {
       console.error(err);
-      setMensagem("❌ Erro de conexão com o servidor.");
+      setMensagem("Erro de conexão.");
     }
 
-    setLoading(false);
+    setLoadingTitulo(false);
   };
 
-  const copiarTexto = (texto) => {
-    navigator.clipboard.writeText(texto);
-    toast.success("Copiado!");
+  const gerarDescricao = async () => {
+    if (!tema.trim()) {
+      toast.error("Digite um tema para gerar o texto.");
+      return;
+    }
+
+    setLoadingDescricao(true);
+    setMensagem("");
+    setDescricaoGerada("");
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/gerar-descricao`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tema }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDescricaoGerada(data.descricao || "");
+      } else {
+        setMensagem(data.erro || "Erro ao gerar texto.");
+      }
+    } catch (err) {
+      console.error(err);
+      setMensagem("Erro de conexão.");
+    }
+
+    setLoadingDescricao(false);
   };
 
-  const usarNoAgendador = (titulo, descricao) => {
+  const usarNoAgendador = () => {
+    if (!tituloGerado && !descricaoGerada) {
+      toast.error("Gere pelo menos um título ou uma descrição.");
+      return;
+    }
+
     toast.success("Ideia enviada para o Agendador 🚀");
-    const t = encodeURIComponent(titulo);
-    const d = encodeURIComponent(descricao);
+    const t = encodeURIComponent(tituloGerado);
+    const d = encodeURIComponent(descricaoGerada);
     navigate(`/dashboard/agendador?titulo=${t}&descricao=${d}`);
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">Central de Ideias ✨</h1>
       <p className="mb-6 text-gray-700 italic">“{fraseDoDia}”</p>
 
-      <div className="mb-8">
+      <div className="mb-6">
         <label className="block font-semibold mb-1">Sobre o que é seu conteúdo?</label>
         <input
           type="text"
           value={tema}
           onChange={(e) => setTema(e.target.value)}
-          placeholder="Ex: Dicas de produtividade para redes sociais"
+          placeholder="Ex: Superação pessoal no dia a dia"
           className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         <button
-          onClick={gerar}
-          disabled={loading}
-          className="mt-3 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition flex items-center gap-2"
+          onClick={gerarTitulo}
+          disabled={loadingTitulo}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 flex items-center justify-center"
         >
-          {loading && <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>}
-          {loading ? "Gerando..." : "Gerar com IA"}
+          {loadingTitulo ? "Gerando Título..." : "🎯 Gerar Título"}
+        </button>
+        <button
+          onClick={gerarDescricao}
+          disabled={loadingDescricao}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 flex items-center justify-center"
+        >
+          {loadingDescricao ? "Gerando Texto..." : "📝 Gerar Texto"}
+        </button>
+        <button
+          onClick={usarNoAgendador}
+          className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900"
+        >
+          Usar no Agendador
         </button>
       </div>
 
-      {mensagem && (
-        <div className="text-red-600 bg-red-100 p-3 rounded mb-4">{mensagem}</div>
-      )}
+      {mensagem && <p className="text-red-600 mb-4">{mensagem}</p>}
 
-      {headlines.length > 0 && (
-        <>
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
-            {headlines.map((h, i) => (
-              <div
-                key={i}
-                className="bg-white border p-4 rounded-xl shadow-sm hover:shadow-md transition group"
-              >
-                <h3 className="text-lg font-semibold text-blue-700 mb-2">💡 {h}</h3>
-                <p className="text-gray-700 mb-2">{descricoes[i] || ""}</p>
-
-                <div className="flex gap-3 text-sm">
-                  <button
-                    onClick={() => copiarTexto(h)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Copiar título
-                  </button>
-                  <button
-                    onClick={() => copiarTexto(descricoes[i] || "")}
-                    className="text-green-600 hover:underline"
-                  >
-                    Copiar descrição
-                  </button>
-                  <button
-                    onClick={() => {
-                      setPreview({ titulo: h, descricao: descricoes[i] || "" });
-                      usarNoAgendador(h, descricoes[i] || "");
-                    }}
-                    className="text-gray-600 hover:underline"
-                  >
-                    Usar no Agendador
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {preview.titulo && (
-            <div className="bg-gray-50 p-6 rounded-xl border">
-              <h2 className="text-xl font-bold mb-2 text-gray-800">🔎 Prévia do conteúdo</h2>
-              <div className="bg-white border p-4 rounded shadow max-w-md">
-                <h3 className="text-blue-800 font-semibold text-lg mb-1">{preview.titulo}</h3>
-                <p className="text-gray-700">{preview.descricao}</p>
-              </div>
+      {(tituloGerado || descricaoGerada) && (
+        <div className="bg-white border rounded-xl p-6 shadow-md">
+          {tituloGerado && (
+            <div className="mb-4">
+              <h3 className="text-blue-800 font-semibold text-lg">💡 Título Gerado:</h3>
+              <p className="text-gray-700">{tituloGerado}</p>
             </div>
           )}
-        </>
+          {descricaoGerada && (
+            <div>
+              <h3 className="text-green-800 font-semibold text-lg">📝 Texto Gerado:</h3>
+              <p className="text-gray-700">{descricaoGerada}</p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
