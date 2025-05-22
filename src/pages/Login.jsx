@@ -44,7 +44,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b1118] to-[#0d1b25] text-white font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0b1118] to-[#0d1b25] text-white font-sans">
       <div className="bg-white text-gray-800 p-10 rounded-2xl shadow-lg w-full max-w-md border border-blue-600">
         <img src="/logo.png" alt="Logo EstrategIA" className="mx-auto mb-6 w-32 h-auto" />
 
@@ -98,19 +98,21 @@ export default function Login() {
           </a>
         </div>
       </div>
+
+      {/* Rodapé com links legais */}
+      <div className="mt-6 text-xs text-center text-gray-400">
+        <a href="/politica" className="mx-1 hover:underline hover:text-blue-600">
+          Política de Privacidade
+        </a>
+        •
+        <a href="/termos" className="mx-1 hover:underline hover:text-blue-600">
+          Termos de Uso
+        </a>
+        •
+        <a href="/exclusao" className="mx-1 hover:underline hover:text-blue-600">
+          Exclusão de Dados
+        </a>
+      </div>
     </div>
   );
 }
-<div className="mt-6 text-xs text-center text-gray-400">
-          <a href="/politica" className="mx-1 hover:underline hover:text-blue-600">
-            Política de Privacidade
-          </a>
-          •
-          <a href="/termos" className="mx-1 hover:underline hover:text-blue-600">
-            Termos de Uso
-          </a>
-          •
-          <a href="/exclusao" className="mx-1 hover:underline hover:text-blue-600">
-            Exclusão de Dados
-          </a>
-        </div>
