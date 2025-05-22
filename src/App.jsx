@@ -15,6 +15,10 @@ import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
 import EditarAgendamento from "./pages/EditarAgendamento";
 
+import Politica from "./pages/Politica";
+import Termos from "./pages/Termos";
+import ExclusaoDeDados from "./pages/ExclusaoDeDados";
+
 import DashboardLayout from "./components/DashboardLayout";
 
 function RotaProtegida({ children }) {
@@ -29,9 +33,14 @@ function App() {
       <Toaster position="top-right" />
 
       <Routes>
+        {/* Rotas públicas */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/politica" element={<Politica />} />
+        <Route path="/termos" element={<Termos />} />
+        <Route path="/exclusao" element={<ExclusaoDeDados />} />
 
+        {/* Rotas protegidas com dashboard */}
         <Route
           path="/dashboard"
           element={

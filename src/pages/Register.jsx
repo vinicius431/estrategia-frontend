@@ -5,6 +5,9 @@ export default function Register() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [nascimento, setNascimento] = useState("");
+  const [sexo, setSexo] = useState("");
   const [mensagem, setMensagem] = useState("");
   const navigate = useNavigate();
 
@@ -13,6 +16,9 @@ export default function Register() {
     setNome("Admin CEO");
     setEmail("CEO@admin.com");
     setSenha("12345");
+    setTelefone("(11) 91234-5678");
+    setNascimento("2000-01-01");
+    setSexo("Masculino");
   }, []);
 
   const handleRegister = async (e) => {
@@ -23,7 +29,14 @@ export default function Register() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, email, senha }),
+        body: JSON.stringify({
+          nome,
+          email,
+          senha,
+          telefone,
+          nascimento,
+          sexo,
+        }),
       });
 
       const text = await res.text();
@@ -67,6 +80,7 @@ export default function Register() {
             className="w-full px-4 py-2 rounded border focus:outline-none text-black"
             required
           />
+
           <input
             type="email"
             placeholder="E-mail"
@@ -75,6 +89,7 @@ export default function Register() {
             className="w-full px-4 py-2 rounded border focus:outline-none text-black"
             required
           />
+
           <input
             type="password"
             placeholder="Senha"
@@ -83,6 +98,34 @@ export default function Register() {
             className="w-full px-4 py-2 rounded border focus:outline-none text-black"
             required
           />
+
+          <input
+            type="tel"
+            placeholder="Telefone (opcional)"
+            value={telefone}
+            onChange={(e) => setTelefone(e.target.value)}
+            className="w-full px-4 py-2 rounded border focus:outline-none text-black"
+          />
+
+          <input
+            type="date"
+            placeholder="Data de Nascimento"
+            value={nascimento}
+            onChange={(e) => setNascimento(e.target.value)}
+            className="w-full px-4 py-2 rounded border focus:outline-none text-black"
+          />
+
+          <select
+            value={sexo}
+            onChange={(e) => setSexo(e.target.value)}
+            className="w-full px-4 py-2 rounded border focus:outline-none text-black"
+          >
+            <option value="">Selecione o sexo</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+            <option value="Prefiro não dizer">Prefiro não dizer</option>
+          </select>
 
           <button
             type="submit"

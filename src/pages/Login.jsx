@@ -101,3 +101,16 @@ export default function Login() {
     </div>
   );
 }
+<div className="mt-6 text-xs text-center text-gray-400">
+          <a href="/politica" className="mx-1 hover:underline hover:text-blue-600">
+            Política de Privacidade
+          </a>
+          •
+          <a href="/termos" className="mx-1 hover:underline hover:text-blue-600">
+            Termos de Uso
+          </a>
+          •
+          <a href="/exclusao" className="mx-1 hover:underline hover:text-blue-600">
+            Exclusão de Dados
+          </a>
+        </div>
