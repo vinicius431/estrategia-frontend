@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
+// Páginas
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -14,11 +15,14 @@ import Hashtags from "./pages/Hashtags";
 import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
 import EditarAgendamento from "./pages/EditarAgendamento";
+import PainelDeControle from "./pages/PainelDeControle";
 
+// Páginas públicas
 import Politica from "./pages/Politica";
 import Termos from "./pages/Termos";
 import ExclusaoDeDados from "./pages/ExclusaoDeDados";
 
+// Layout
 import DashboardLayout from "./components/DashboardLayout";
 
 function RotaProtegida({ children }) {
@@ -29,7 +33,6 @@ function RotaProtegida({ children }) {
 function App() {
   return (
     <Router>
-      {/* Toaster global para exibir mensagens como "Copiado!" */}
       <Toaster position="top-right" />
 
       <Routes>
@@ -50,6 +53,7 @@ function App() {
           }
         >
           <Route index element={<Home />} />
+          <Route path="painel" element={<PainelDeControle />} />
           <Route path="agendador" element={<Agendador />} />
           <Route path="tutor" element={<Tutor />} />
           <Route path="analise" element={<Analise />} />
