@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const frases = [
@@ -14,22 +13,38 @@ const fraseDoDia = frases[Math.floor(Math.random() * frases.length)];
 
 export default function CentralIdeias() {
   const [tema, setTema] = useState("");
-  const [tituloGerado, setTituloGerado] = useState("");
-  const [descricaoGerada, setDescricaoGerada] = useState("");
+  const [titulosGerados, setTitulosGerados] = useState([]);
+  const [descricaoGeradas, setDescricaoGeradas] = useState([]);
   const [loadingTitulo, setLoadingTitulo] = useState(false);
   const [loadingDescricao, setLoadingDescricao] = useState(false);
   const [mensagem, setMensagem] = useState("");
-  const navigate = useNavigate();
+
+  // Carregar ideias salvas do localStorage
+  useEffect(() => {
+    const temaSalvo = localStorage.getItem("centralTema");
+    const titulosSalvos = JSON.parse(localStorage.getItem("centralTitulos") || "[]");
+    const descricoesSalvas = JSON.parse(localStorage.getItem("centralDescricoes") || "[]");
+
+    if (temaSalvo) setTema(temaSalvo);
+    if (titulosSalvos.length) setTitulosGerados(titulosSalvos);
+    if (descricoesSalvas.length) setDescricaoGeradas(descricoesSalvas);
+  }, []);
+
+  // Salvar ideias no localStorage
+  const salvarIdeias = (tema, titulos, descricoes) => {
+    localStorage.setItem("centralTema", tema);
+    localStorage.setItem("centralTitulos", JSON.stringify(titulos));
+    localStorage.setItem("centralDescricoes", JSON.stringify(descricoes));
+  };
 
   const gerarTitulo = async () => {
     if (!tema.trim()) {
-      toast.error("Digite um tema para gerar o título.");
+      toast.error("Digite um tema para gerar os títulos.");
       return;
     }
 
     setLoadingTitulo(true);
     setMensagem("");
-    setTituloGerado("");
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/gerar-headline`, {
@@ -38,10 +53,11 @@ export default function CentralIdeias() {
         body: JSON.stringify({ tema }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setTituloGerado(data.titulo || "");
+      if (res.ok && data.titulos) {
+        setTitulosGerados(data.titulos);
+        salvarIdeias(tema, data.titulos, descricaoGeradas);
       } else {
-        setMensagem(data.erro || "Erro ao gerar título.");
+        setMensagem(data.erro || "Erro ao gerar títulos.");
       }
     } catch (err) {
       console.error(err);
@@ -53,13 +69,12 @@ export default function CentralIdeias() {
 
   const gerarDescricao = async () => {
     if (!tema.trim()) {
-      toast.error("Digite um tema para gerar o texto.");
+      toast.error("Digite um tema para gerar os textos.");
       return;
     }
 
     setLoadingDescricao(true);
     setMensagem("");
-    setDescricaoGerada("");
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/gerar-descricao`, {
@@ -68,10 +83,11 @@ export default function CentralIdeias() {
         body: JSON.stringify({ tema }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setDescricaoGerada(data.descricao || "");
+      if (res.ok && data.descricoes) {
+        setDescricaoGeradas(data.descricoes);
+        salvarIdeias(tema, titulosGerados, data.descricoes);
       } else {
-        setMensagem(data.erro || "Erro ao gerar texto.");
+        setMensagem(data.erro || "Erro ao gerar textos.");
       }
     } catch (err) {
       console.error(err);
@@ -81,20 +97,8 @@ export default function CentralIdeias() {
     setLoadingDescricao(false);
   };
 
-  const usarNoAgendador = () => {
-    if (!tituloGerado && !descricaoGerada) {
-      toast.error("Gere pelo menos um título ou uma descrição.");
-      return;
-    }
-
-    toast.success("Ideia enviada para o Agendador 🚀");
-    const t = encodeURIComponent(tituloGerado);
-    const d = encodeURIComponent(descricaoGerada);
-    navigate(`/dashboard/agendador?titulo=${t}&descricao=${d}`);
-  };
-
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">Central de Ideias ✨</h1>
       <p className="mb-6 text-gray-700 italic">“{fraseDoDia}”</p>
 
@@ -113,41 +117,44 @@ export default function CentralIdeias() {
         <button
           onClick={gerarTitulo}
           disabled={loadingTitulo}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 flex items-center justify-center"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
         >
-          {loadingTitulo ? "Gerando Título..." : "🎯 Gerar Título"}
+          {loadingTitulo ? "Gerando Títulos..." : "🎯 Gerar Títulos"}
         </button>
         <button
           onClick={gerarDescricao}
           disabled={loadingDescricao}
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 flex items-center justify-center"
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
         >
-          {loadingDescricao ? "Gerando Texto..." : "📝 Gerar Texto"}
-        </button>
-        <button
-          onClick={usarNoAgendador}
-          className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900"
-        >
-          Usar no Agendador
+          {loadingDescricao ? "Gerando Textos..." : "📝 Gerar Textos"}
         </button>
       </div>
 
       {mensagem && <p className="text-red-600 mb-4">{mensagem}</p>}
 
-      {(tituloGerado || descricaoGerada) && (
-        <div className="bg-white border rounded-xl p-6 shadow-md">
-          {tituloGerado && (
-            <div className="mb-4">
-              <h3 className="text-blue-800 font-semibold text-lg">💡 Título Gerado:</h3>
-              <p className="text-gray-700">{tituloGerado}</p>
-            </div>
-          )}
-          {descricaoGerada && (
-            <div>
-              <h3 className="text-green-800 font-semibold text-lg">📝 Texto Gerado:</h3>
-              <p className="text-gray-700">{descricaoGerada}</p>
-            </div>
-          )}
+      {titulosGerados.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-blue-700 mb-2">💡 Títulos Gerados:</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {titulosGerados.map((titulo, i) => (
+              <div key={i} className="border p-4 rounded shadow bg-white text-gray-800">
+                {titulo}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {descricaoGeradas.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-green-700 mb-2">📝 Textos Gerados:</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {descricaoGeradas.map((descricao, i) => (
+              <div key={i} className="border p-4 rounded shadow bg-white text-gray-800">
+                {descricao}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
