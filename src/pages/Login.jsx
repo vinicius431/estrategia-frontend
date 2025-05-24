@@ -113,6 +113,16 @@ export default function Login() {
           Exclusão de Dados
         </a>
       </div>
+
+      {/* Rodapé institucional */}
+      <div className="mt-4 text-center text-xs text-gray-500">
+        <p className="font-medium">E-mails institucionais:</p>
+        <p>
+          contato@appestrategia.com • suporte@appestrategia.com • comercial@appestrategia.com
+        </p>
+        <p className="mt-1">CNPJ: 43.340.858/0001-08</p>
+        <p className="mt-1">© {new Date().getFullYear()} EstrategIA — Todos os direitos reservados.</p>
+      </div>
     </div>
   );
 }
