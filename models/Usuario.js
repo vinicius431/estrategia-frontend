@@ -8,6 +8,13 @@ const usuarioSchema = new mongoose.Schema({
   nascimento: { type: String },
   sexo: { type: String },
   plano: { type: String, default: "Free" },
+
+  // 🔗 Integração com Instagram/Facebook
+  instagramAccessToken: { type: String },
+  instagramBusinessId: { type: String },
+  facebookPageId: { type: String },
+  tokenExpiresAt: { type: Date },
+  instagramName: { type: String }, // ✅ Nome do perfil do Instagram conectado
 });
 
 module.exports = mongoose.model("Usuario", usuarioSchema);
