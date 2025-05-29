@@ -35,30 +35,81 @@ export default function Agendador() {
   }, [tituloParam, descricaoParam, ctaParam, hashtagsParam]);
 
   useEffect(() => {
-  const verificarIntegracaoInstagram = async () => {
+    const verificarIntegracaoInstagram = async () => {
+      try {
+        const res = await fetch(`${API_URL}/integracao/instagram`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        if (data.instagramBusinessId && data.instagramAccessToken) {
+          setConectado(true);
+          setNomeUsuario("Perfil conectado ✅");
+        }
+      } catch (err) {
+        console.error("❌ Erro ao verificar integração:", err);
+      }
+    };
+
+    verificarIntegracaoInstagram();
+  }, []);
+
+  const handlePostarInstagram = async () => {
+    if (!previewImg || !imagem) {
+      setMensagem("❌ Imagem ou vídeo não selecionado.");
+      return;
+    }
+
+    setLoading(true);
+    setMensagem("");
+
     try {
-      const res = await fetch(`${API_URL}/integracao/instagram`, {
+      const formData = new FormData();
+      formData.append("file", imagem);
+
+      const uploadRes = await fetch(`${API_URL}/upload`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
+        body: formData,
       });
 
-      if (!res.ok) return;
+      const { url: midiaUrl } = await uploadRes.json();
+      const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
 
-      const data = await res.json();
+      const publicarRes = await fetch(`${API_URL}/publicar-no-instagram`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          legenda: `${descricao}\n\n${cta}\n\n${hashtags}`,
+          midiaUrl,
+          tipo,
+        }),
+      });
 
-      if (data.instagramBusinessId && data.instagramAccessToken) {
-        setConectado(true);
-        setNomeUsuario("Perfil conectado ✅");
+      const data = await publicarRes.json();
+
+      if (publicarRes.ok) {
+        setMensagem("✅ Publicado no Instagram com sucesso!");
+      } else {
+        setMensagem("❌ Erro ao publicar: " + (data?.erro || "Erro desconhecido."));
       }
     } catch (err) {
-      console.error("❌ Erro ao verificar integração:", err);
+      console.error(err);
+      setMensagem("❌ Erro ao conectar com o servidor.");
+    } finally {
+      setLoading(false);
     }
   };
-
-  verificarIntegracaoInstagram();
-}, []);
-
 
   const handleLoginFacebook = () => {
     window.FB.login(
@@ -84,28 +135,25 @@ export default function Agendador() {
                   setConectado(true);
                   setNomeUsuario(igName || "Perfil conectado");
 
-                  
-                  // Envia os dados para o backend
-fetch(`${API_URL}/integracao/instagram`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-  body: JSON.stringify({
-    instagramAccessToken: pageAccessToken,
-    instagramBusinessId: igId,
-    facebookPageId: pageId,
-  }),
-})
-  .then((res) => res.json())
-  .then((data) => {
-    console.log("📥 Dados salvos no backend:", data);
-  })
-  .catch((err) => {
-    console.error("❌ Erro ao salvar integração:", err);
-  });
-
+                  fetch(`${API_URL}/integracao/instagram`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({
+                      instagramAccessToken: pageAccessToken,
+                      instagramBusinessId: igId,
+                      facebookPageId: pageId,
+                    }),
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log("📥 Dados salvos no backend:", data);
+                    })
+                    .catch((err) => {
+                      console.error("❌ Erro ao salvar integração:", err);
+                    });
                 } else {
                   console.log("❌ Nenhuma conta do Instagram conectada à página.");
                 }
@@ -277,7 +325,6 @@ fetch(`${API_URL}/integracao/instagram`, {
     <div>
       <h1 className="text-2xl font-bold mb-4">Agendador de Conteúdo 📅</h1>
 
-      {/* ✅ Status de conexão com Instagram */}
       <div className="mb-4">
         {!conectado ? (
           <button
@@ -330,6 +377,14 @@ fetch(`${API_URL}/integracao/instagram`, {
               {loading ? "Agendando..." : "Agendar"}
             </button>
           )}
+
+          <button
+            onClick={handlePostarInstagram}
+            className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-4"
+            disabled={loading}
+          >
+            {loading ? "Publicando..." : "Postar Agora no Instagram"}
+          </button>
         </div>
       </div>
     </div>
