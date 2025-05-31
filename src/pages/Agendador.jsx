@@ -83,7 +83,7 @@ export default function Agendador() {
       const { url: midiaUrl } = await uploadRes.json();
       const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
 
-      const publicarRes = await fetch(`${API_URL}/publicar-no-instagram`, {
+      const publicarRes = await fetch(`${API_URL}/instagram/publicar`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
