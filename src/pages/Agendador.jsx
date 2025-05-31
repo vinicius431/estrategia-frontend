@@ -135,7 +135,7 @@ export default function Agendador() {
                   setConectado(true);
                   setNomeUsuario(igName || "Perfil conectado");
 
-                  fetch(`${API_URL}/integracao/instagram`, {
+                  fetch(`${API_URL}/api/integracao/instagram`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
