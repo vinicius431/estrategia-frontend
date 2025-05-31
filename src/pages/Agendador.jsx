@@ -80,8 +80,17 @@ export default function Agendador() {
         body: formData,
       });
 
-      const { url: midiaUrl } = await uploadRes.json();
-      const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
+      const uploadData = await uploadRes.json();
+
+if (!uploadRes.ok || !uploadData.url) {
+  setMensagem("❌ Falha no upload da imagem/vídeo.");
+  setLoading(false);
+  return;
+}
+
+const midiaUrl = uploadData.url;
+const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
+
 
       const publicarRes = await fetch(`${API_URL}/api/instagram/publicar`, {
         method: "POST",
