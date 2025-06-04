@@ -91,6 +91,11 @@ if (!uploadRes.ok || !uploadData.url) {
 const midiaUrl = uploadData.url;
 const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
 
+console.log("▶️ Publicando com dados:");
+console.log("Legenda:", `${descricao}\n\n${cta}\n\n${hashtags}`);
+console.log("midiaUrl:", midiaUrl);
+console.log("tipo:", tipo);
+
 
       const publicarRes = await fetch(`${API_URL}/api/instagram/publicar`, {
         method: "POST",
