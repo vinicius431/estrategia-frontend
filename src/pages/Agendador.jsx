@@ -37,6 +37,9 @@ export default function Agendador() {
   useEffect(() => {
     const verificarIntegracaoInstagram = async () => {
       try {
+
+        console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
+
         const res = await fetch(`${API_URL}/integracao/instagram`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -71,6 +74,9 @@ export default function Agendador() {
     try {
       const formData = new FormData();
       formData.append("file", imagem);
+      
+      console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
+
 
       const uploadRes = await fetch(`${API_URL}/upload`, {
         method: "POST",
@@ -96,6 +102,8 @@ console.log("Legenda:", `${descricao}\n\n${cta}\n\n${hashtags}`);
 console.log("midiaUrl:", midiaUrl);
 console.log("tipo:", tipo);
 
+
+console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
 
       const publicarRes = await fetch(`${API_URL}/api/instagram/publicar`, {
         method: "POST",
@@ -148,6 +156,8 @@ console.log("tipo:", tipo);
 
                   setConectado(true);
                   setNomeUsuario(igName || "Perfil conectado");
+
+                  console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
 
                   fetch(`${API_URL}/api/integracao/instagram`, {
                     method: "POST",
