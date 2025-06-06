@@ -169,6 +169,7 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
                       instagramAccessToken: pageAccessToken,
                       instagramBusinessId: igId,
                       facebookPageId: pageId,
+                      instagramName: igName,
                     }),
                   })
                     .then((res) => res.json())
