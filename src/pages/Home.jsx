@@ -11,7 +11,7 @@ import {
   Lightbulb,
   Wand2
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 
@@ -137,13 +137,13 @@ export default function Home() {
           <span className="text-sm text-gray-800 font-medium">{mensagem}</span>
         </div>
 
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={frequencia}>
-            <XAxis dataKey="semana" />
-            <YAxis allowDecimals={false} />
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={frequencia} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
+            <XAxis dataKey="semana" stroke="#8884d8" />
+            <YAxis allowDecimals={false} stroke="#8884d8" />
             <Tooltip />
-            <Bar dataKey="posts" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-          </BarChart>
+            <Line type="monotone" dataKey="posts" stroke="#3B82F6" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+          </LineChart>
         </ResponsiveContainer>
 
         <p className="mt-4 text-sm text-gray-600 italic">
@@ -172,5 +172,3 @@ export default function Home() {
     </div>
   );
 }
-
-
