@@ -176,6 +176,7 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
                     .then((res) => res.json())
                     .then((data) => {
                       console.log("📥 Dados salvos no backend:", data);
+                      console.log("🔍 Retorno da integração:", data);
                     })
                     .catch((err) => {
                       console.error("❌ Erro ao salvar integração:", err);
