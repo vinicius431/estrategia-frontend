@@ -119,6 +119,7 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
       });
 
       const data = await publicarRes.json();
+     console.log("📡 Resposta da API:", publicarRes.status, data);
 
       if (publicarRes.ok) {
         setMensagem("✅ Publicado no Instagram com sucesso!");
