@@ -72,7 +72,6 @@ export default function DashboardLayout() {
     { label: "Início", to: "/dashboard", icon: <Home size={18} /> },
     { label: "Agendador", to: "/dashboard/agendador", icon: <Calendar size={18} /> },
     { label: "Central de Ideias", to: "/dashboard/central", icon: <Wand2 size={18} /> },
-    { label: "Painel de Controle", to: "/dashboard/painel", icon: <LineChart size={18} /> },
     {
       label: "Análise Estratégica",
       to: "/dashboard/analise",
