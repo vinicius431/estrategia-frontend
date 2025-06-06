@@ -15,7 +15,7 @@ import Hashtags from "./pages/Hashtags";
 import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
 import EditarAgendamento from "./pages/EditarAgendamento";
-import PainelDeControle from "./pages/PainelDeControle";
+
 
 // Páginas públicas
 import Politica from "./pages/Politica";
