@@ -155,7 +155,14 @@ export default function Home() {
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           <CalendarRange className="text-blue-500" /> Calendário de Postagens
         </h3>
-        <Calendar tileClassName={tileClassName} className="rounded-xl w-full" />
+<Calendar
+  tileClassName={({ date }) =>
+    diasComPost.includes(date.toDateString())
+      ? "highlighted-date"
+      : ""
+  }
+  className="custom-calendar rounded-2xl w-full max-w-full"
+/>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
