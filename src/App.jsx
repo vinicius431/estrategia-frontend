@@ -53,7 +53,6 @@ function App() {
           }
         >
           <Route index element={<Home />} />
-          <Route path="painel" element={<PainelDeControle />} />
           <Route path="agendador" element={<Agendador />} />
           <Route path="tutor" element={<Tutor />} />
           <Route path="analise" element={<Analise />} />
