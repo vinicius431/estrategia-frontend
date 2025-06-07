@@ -104,6 +104,32 @@ export default function Home() {
   fetchInstagramInsights();
 }, []);
 
+const [instagramConectado, setInstagramConectado] = useState(false);
+
+useEffect(() => {
+  async function verificarIntegracao() {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/integracao/instagram`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+
+      if (res.ok && data.instagramAccessToken && data.instagramBusinessId) {
+        setInstagramConectado(true);
+      } else {
+        setInstagramConectado(false);
+      }
+    } catch (err) {
+      console.error("Erro ao verificar integração do Instagram:", err);
+      setInstagramConectado(false);
+    }
+  }
+
+  verificarIntegracao();
+}, []);
+
 
   return (
     <div className="space-y-8 p-4 md:p-8">
@@ -111,6 +137,24 @@ export default function Home() {
         <h2 className="text-2xl font-semibold">Motivação do Dia</h2>
         <p className="text-lg italic mt-2">“{fraseDoDia}”</p>
       </div>
+
+      {!instagramConectado && (
+  <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded-xl shadow-md">
+    <p className="text-sm mb-2 font-medium">
+      Você ainda não conectou sua conta do Instagram.
+    </p>
+    
+    <button
+  onClick={() =>
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/facebook`
+  }
+  className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-md transition"
+>
+  Conectar Instagram
+</button>
+  </div>
+)}
+
 
       <div className="grid md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
