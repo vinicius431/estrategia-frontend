@@ -15,6 +15,7 @@ const usuarioSchema = new mongoose.Schema({
   facebookPageId: { type: String },
   tokenExpiresAt: { type: Date },
   instagramName: { type: String }, // ✅ Nome do perfil do Instagram conectado
+  paginaAccessToken: String,
 });
 
 module.exports = mongoose.model("Usuario", usuarioSchema);

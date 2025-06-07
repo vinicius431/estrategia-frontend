@@ -87,7 +87,8 @@ export default function Home() {
   useEffect(() => {
   async function fetchInstagramInsights() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/insights`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/instagram/insights`, {
+
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
