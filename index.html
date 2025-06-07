@@ -5,6 +5,39 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EstrategIA</title>
+
+    <style>
+  .react-calendar {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .react-calendar__tile {
+    border-radius: 9999px;
+    padding: 0.5rem 0;
+    transition: all 0.2s;
+  }
+
+  .react-calendar__tile--active {
+    background: #3B82F6;
+    color: white;
+  }
+
+  .react-calendar__tile:hover {
+    background: #E0F2FE;
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: #4B5563;
+  }
+</style>
+
   </head>
   <body>
     <div id="root"></div>

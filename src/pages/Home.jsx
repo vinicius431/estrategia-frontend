@@ -9,7 +9,9 @@ import {
   CalendarRange,
   FileText,
   Lightbulb,
-  Wand2
+  Wand2,
+  Users,
+  Heart
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Calendar from "react-calendar";
@@ -33,6 +35,10 @@ export default function Home() {
   const [frequencia, setFrequencia] = useState([]);
   const [mensagem, setMensagem] = useState("");
   const [diasComPost, setDiasComPost] = useState([]);
+
+  // Novos dados reais da API da Meta
+  const [seguidores, setSeguidores] = useState(0);
+  const [mediaCurtidas, setMediaCurtidas] = useState(0);
 
   useEffect(() => {
     const agendados = JSON.parse(localStorage.getItem("agendamentos")) || [];
@@ -78,9 +84,26 @@ export default function Home() {
     }
   }, []);
 
-  const tileClassName = ({ date }) => {
-    return diasComPost.includes(date.toDateString()) ? "bg-blue-500 text-white rounded-full" : null;
-  };
+  useEffect(() => {
+    async function fetchInstagramInsights() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/instagram/insights`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        if (data) {
+          setSeguidores(data.seguidores || 0);
+          setMediaCurtidas(data.mediaCurtidas || 0);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar insights:", err);
+      }
+    }
+
+    fetchInstagramInsights();
+  }, []);
 
   return (
     <div className="space-y-8 p-4 md:p-8">
@@ -125,44 +148,62 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-lg border">
-        <div className="mb-4 flex items-center gap-2">
-          {mensagem.includes("aumentou") ? (
-            <TrendingUp className="text-green-600" />
-          ) : mensagem.includes("caiu") ? (
-            <TrendingDown className="text-red-600" />
-          ) : (
-            <Sparkles className="text-blue-600" />
-          )}
-          <span className="text-sm text-gray-800 font-medium">{mensagem}</span>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border">
+          <div className="mb-4 flex items-center gap-2">
+            {mensagem.includes("aumentou") ? (
+              <TrendingUp className="text-green-600" />
+            ) : mensagem.includes("caiu") ? (
+              <TrendingDown className="text-red-600" />
+            ) : (
+              <Sparkles className="text-blue-600" />
+            )}
+            <span className="text-sm text-gray-800 font-medium">{mensagem}</span>
+          </div>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={frequencia} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
+              <XAxis dataKey="semana" stroke="#8884d8" />
+              <YAxis allowDecimals={false} stroke="#8884d8" />
+              <Tooltip />
+              <Line type="monotone" dataKey="posts" stroke="#3B82F6" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+            </LineChart>
+          </ResponsiveContainer>
+
+          <p className="mt-4 text-sm text-gray-600 italic">
+            A constância é o diferencial de quem alcança resultados no digital.
+          </p>
         </div>
 
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={frequencia} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
-            <XAxis dataKey="semana" stroke="#8884d8" />
-            <YAxis allowDecimals={false} stroke="#8884d8" />
-            <Tooltip />
-            <Line type="monotone" dataKey="posts" stroke="#3B82F6" strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} />
-          </LineChart>
-        </ResponsiveContainer>
-
-        <p className="mt-4 text-sm text-gray-600 italic">
-          A constância é o diferencial de quem alcança resultados no digital.
-        </p>
+        <div className="bg-white p-6 rounded-2xl shadow-lg border space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <CalendarRange className="text-blue-500" /> Calendário de Postagens
+          </h3>
+          <Calendar
+            tileClassName={({ date }) =>
+              diasComPost.includes(date.toDateString()) ? "highlighted-date" : ""
+            }
+            className="custom-calendar rounded-2xl w-full max-w-full"
+          />
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-lg border">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <CalendarRange className="text-blue-500" /> Calendário de Postagens
-        </h3>
-<Calendar
-  tileClassName={({ date }) =>
-    diasComPost.includes(date.toDateString())
-      ? "highlighted-date"
-      : ""
-  }
-  className="custom-calendar rounded-2xl w-full max-w-full"
-/>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
+          <Users className="text-blue-600" size={32} />
+          <div>
+            <h3 className="text-lg font-semibold">Seguidores</h3>
+            <p className="text-2xl font-bold">{seguidores}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
+          <Heart className="text-red-500" size={32} />
+          <div>
+            <h3 className="text-lg font-semibold">Média de Curtidas</h3>
+            <p className="text-2xl font-bold">{mediaCurtidas}</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4">
