@@ -37,8 +37,8 @@ export default function Home() {
   const [diasComPost, setDiasComPost] = useState([]);
 
   // Novos dados reais da API da Meta
-  const [seguidores, setSeguidores] = useState(0);
-  const [mediaCurtidas, setMediaCurtidas] = useState(0);
+  const [insights, setInsights] = useState(null);
+  const [erroInsights, setErroInsights] = useState("");
 
   useEffect(() => {
     const agendados = JSON.parse(localStorage.getItem("agendamentos")) || [];
@@ -85,25 +85,25 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    async function fetchInstagramInsights() {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/instagram/insights`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await res.json();
-        if (data) {
-          setSeguidores(data.seguidores || 0);
-          setMediaCurtidas(data.mediaCurtidas || 0);
-        }
-      } catch (err) {
-        console.error("Erro ao buscar insights:", err);
-      }
+  async function fetchInstagramInsights() {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/insights`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || "Erro ao buscar insights");
+      setInsights(data);
+    } catch (err) {
+      console.error("Erro ao buscar insights:", err);
+      setErroInsights("Erro ao carregar dados do Instagram.");
     }
+  }
 
-    fetchInstagramInsights();
-  }, []);
+  fetchInstagramInsights();
+}, []);
+
 
   return (
     <div className="space-y-8 p-4 md:p-8">
@@ -188,23 +188,31 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
-          <Users className="text-blue-600" size={32} />
-          <div>
-            <h3 className="text-lg font-semibold">Seguidores</h3>
-            <p className="text-2xl font-bold">{seguidores}</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
-          <Heart className="text-red-500" size={32} />
-          <div>
-            <h3 className="text-lg font-semibold">Média de Curtidas</h3>
-            <p className="text-2xl font-bold">{mediaCurtidas}</p>
-          </div>
+      {erroInsights ? (
+  <div className="text-red-500">{erroInsights}</div>
+) : insights && insights.data ? (
+  <div className="grid md:grid-cols-3 gap-6">
+    {insights.data.map((item, index) => (
+      <div
+        key={index}
+        className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4"
+      >
+        <Users className="text-blue-600" size={32} />
+        <div>
+          <h3 className="text-lg font-semibold capitalize">
+            {item.title.replace("_", " ")}
+          </h3>
+          <p className="text-2xl font-bold">
+            {item.values && item.values[0] ? item.values[0].value : "N/A"}
+          </p>
         </div>
       </div>
+    ))}
+  </div>
+) : (
+  <div className="text-gray-500">Carregando dados do Instagram...</div>
+)}
+
 
       <div className="grid md:grid-cols-3 gap-4">
         <a href="/dashboard/meus-conteudos" className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl shadow-md flex items-center gap-3">
