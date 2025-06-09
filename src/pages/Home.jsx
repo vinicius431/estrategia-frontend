@@ -35,102 +35,114 @@ export default function Home() {
   const [frequencia, setFrequencia] = useState([]);
   const [mensagem, setMensagem] = useState("");
   const [diasComPost, setDiasComPost] = useState([]);
-
-  // Novos dados reais da API da Meta
   const [insights, setInsights] = useState(null);
   const [erroInsights, setErroInsights] = useState("");
+  const [instagramConectado, setInstagramConectado] = useState(false);
 
+  // ✅ Dados reais do backend
   useEffect(() => {
-    const agendados = JSON.parse(localStorage.getItem("agendamentos")) || [];
-    setTotalAgendados(agendados.length);
+    async function fetchAgendamentosReais() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/agendamentos`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
-    if (agendados.length > 0) {
-      const ultima = agendados[agendados.length - 1];
-      setUltimaData(ultima.data || "Não informado");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || "Erro ao buscar agendamentos");
+
+        setTotalAgendados(data.length);
+
+        if (data.length > 0) {
+          const ultima = data[data.length - 1];
+          setUltimaData(ultima.data || "Não informado");
+        }
+
+        const frequenciaSemanal = [0, 0, 0, 0];
+        const hoje = new Date();
+        const dias = [];
+
+        data.forEach((post) => {
+          const dataPost = new Date(post.data);
+          dias.push(dataPost.toDateString());
+          const diff = Math.floor((hoje - dataPost) / (1000 * 60 * 60 * 24));
+          const semana = Math.floor(diff / 7);
+          if (semana >= 0 && semana < 4) {
+            frequenciaSemanal[3 - semana]++;
+          }
+        });
+
+        setDiasComPost(dias);
+
+        const labels = ["Há 3 sem", "Há 2 sem", "Semana passada", "Atual"];
+        const dataset = frequenciaSemanal.map((qtd, i) => ({ semana: labels[i], posts: qtd }));
+        setFrequencia(dataset);
+
+        const atual = dataset[3].posts;
+        const anterior = dataset[2].posts;
+
+        if (atual > anterior) {
+          setMensagem("🎉 Sua frequência aumentou. Continue nesse ritmo!");
+        } else if (atual < anterior) {
+          setMensagem("⚠️ Sua frequência caiu. Lembre-se: constância gera resultados.");
+        } else {
+          setMensagem("📌 Frequência estável. A constância faz o sucesso acontecer.");
+        }
+      } catch (err) {
+        console.error("Erro ao buscar agendamentos reais:", err.message);
+      }
     }
+
+    fetchAgendamentosReais();
 
     const tutorInfo = JSON.parse(localStorage.getItem("tutorTema"));
     if (tutorInfo) setUltimoTema(tutorInfo);
-
-    const frequenciaSemanal = [0, 0, 0, 0];
-    const hoje = new Date();
-    const dias = [];
-
-    agendados.forEach((post) => {
-      const data = new Date(post.data);
-      dias.push(data.toDateString());
-      const diff = Math.floor((hoje - data) / (1000 * 60 * 60 * 24));
-      const semana = Math.floor(diff / 7);
-      if (semana >= 0 && semana < 4) {
-        frequenciaSemanal[3 - semana]++;
-      }
-    });
-
-    setDiasComPost(dias);
-
-    const labels = ["Há 3 sem", "Há 2 sem", "Semana passada", "Atual"];
-    const dataset = frequenciaSemanal.map((qtd, i) => ({ semana: labels[i], posts: qtd }));
-    setFrequencia(dataset);
-
-    const atual = dataset[3].posts;
-    const anterior = dataset[2].posts;
-
-    if (atual > anterior) {
-      setMensagem("🎉 Sua frequência aumentou. Continue nesse ritmo!");
-    } else if (atual < anterior) {
-      setMensagem("⚠️ Sua frequência caiu. Lembre-se: constância gera resultados.");
-    } else {
-      setMensagem("📌 Frequência estável. A constância faz o sucesso acontecer.");
-    }
   }, []);
 
   useEffect(() => {
-  async function fetchInstagramInsights() {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/instagram/insights`, {
-
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.erro || "Erro ao buscar insights");
-      setInsights(data);
-    } catch (err) {
-      console.error("Erro ao buscar insights:", err);
-      setErroInsights("Erro ao carregar dados do Instagram.");
+    async function fetchInstagramInsights() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/instagram/insights`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || "Erro ao buscar insights");
+        setInsights(data);
+      } catch (err) {
+        console.error("Erro ao buscar insights:", err);
+        setErroInsights("Erro ao carregar dados do Instagram.");
+      }
     }
-  }
 
-  fetchInstagramInsights();
-}, []);
+    fetchInstagramInsights();
+  }, []);
 
-const [instagramConectado, setInstagramConectado] = useState(false);
+  useEffect(() => {
+    async function verificarIntegracao() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/integracao/instagram`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
 
-useEffect(() => {
-  async function verificarIntegracao() {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/integracao/instagram`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await res.json();
-
-      if (res.ok && data.instagramAccessToken && data.instagramBusinessId) {
-        setInstagramConectado(true);
-      } else {
+        if (res.ok && data.instagramAccessToken && data.instagramBusinessId) {
+          setInstagramConectado(true);
+        } else {
+          setInstagramConectado(false);
+        }
+      } catch (err) {
+        console.error("Erro ao verificar integração do Instagram:", err);
         setInstagramConectado(false);
       }
-    } catch (err) {
-      console.error("Erro ao verificar integração do Instagram:", err);
-      setInstagramConectado(false);
     }
-  }
 
-  verificarIntegracao();
-}, []);
-
+    verificarIntegracao();
+  }, []);
 
   return (
     <div className="space-y-8 p-4 md:p-8">
@@ -140,22 +152,20 @@ useEffect(() => {
       </div>
 
       {!instagramConectado && (
-  <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded-xl shadow-md">
-    <p className="text-sm mb-2 font-medium">
-      Você ainda não conectou sua conta do Instagram.
-    </p>
-    
-    <button
-  onClick={() =>
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/facebook`
-  }
-  className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-md transition"
->
-  Conectar Instagram
-</button>
-  </div>
-)}
-
+        <div className="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded-xl shadow-md">
+          <p className="text-sm mb-2 font-medium">
+            Você ainda não conectou sua conta do Instagram.
+          </p>
+          <button
+            onClick={() =>
+              window.location.href = `${import.meta.env.VITE_API_URL}/auth/facebook`
+            }
+            className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-md transition"
+          >
+            Conectar Instagram
+          </button>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4">
@@ -234,30 +244,29 @@ useEffect(() => {
       </div>
 
       {erroInsights ? (
-  <div className="text-red-500">{erroInsights}</div>
-) : insights && insights.data ? (
-  <div className="grid md:grid-cols-3 gap-6">
-    {insights.data.map((item, index) => (
-      <div
-        key={index}
-        className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4"
-      >
-        <Users className="text-blue-600" size={32} />
-        <div>
-          <h3 className="text-lg font-semibold capitalize">
-            {item.title.replace("_", " ")}
-          </h3>
-          <p className="text-2xl font-bold">
-            {item.values && item.values[0] ? item.values[0].value : "N/A"}
-          </p>
+        <div className="text-red-500">{erroInsights}</div>
+      ) : insights && insights.data ? (
+        <div className="grid md:grid-cols-3 gap-6">
+          {insights.data.map((item, index) => (
+            <div
+              key={index}
+              className="bg-white p-6 rounded-2xl shadow-lg border flex items-center gap-4"
+            >
+              <Users className="text-blue-600" size={32} />
+              <div>
+                <h3 className="text-lg font-semibold capitalize">
+                  {item.title.replace("_", " ")}
+                </h3>
+                <p className="text-2xl font-bold">
+                  {item.values && item.values[0] ? item.values[0].value : "N/A"}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    ))}
-  </div>
-) : (
-  <div className="text-gray-500">Carregando dados do Instagram...</div>
-)}
-
+      ) : (
+        <div className="text-gray-500">Carregando dados do Instagram...</div>
+      )}
 
       <div className="grid md:grid-cols-3 gap-4">
         <a href="/dashboard/meus-conteudos" className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl shadow-md flex items-center gap-3">
