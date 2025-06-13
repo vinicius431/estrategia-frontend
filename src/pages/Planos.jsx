@@ -13,18 +13,27 @@ export default function Planos() {
   const precos = {
     Starter: {
       mensal: "R$49,90/mês",
-      trimestral: "R$149,97 (10% OFF)",
-      anual: "R$509,00 (15% OFF)"
+      trimestral: "R$149,97 ",
+      anual: "R$509,00"
     },
     Plus: {
       mensal: "R$99,90/mês",
-      trimestral: "R$299,70 (10% OFF)",
-      anual: "R$1.018,98 (15% OFF)"
+      trimestral: "R$299,70 ",
+      anual: "R$1.018,98"
     },
     Premium: {
       mensal: "R$129,90/mês",
-      trimestral: "R$350,73 (10% OFF)",
-      anual: "R$1.247,04 (20% OFF)"
+      trimestral: "R$350,73 ",
+      anual: "R$1.247,04"
+    }
+  };
+
+  const descontos = {
+    trimestral: "10% OFF",
+    anual: {
+      Starter: "15% OFF",
+      Plus: "15% OFF",
+      Premium: "20% OFF"
     }
   };
 
@@ -43,6 +52,20 @@ export default function Planos() {
       ]
     },
     {
+      nome: "Premium",
+      cor: "border-green-600",
+      destaque: true,
+      beneficios: [
+        "Agendamentos ilimitados",
+        "Gerador de hashtag ilimitado",
+        "Central de Ideias ilimitada",
+        "Modo Tutor completo",
+        "Biblioteca de imagens",
+        "Acesso a Meus Conteúdos",
+        "Use a IA até 15 vezes por dia — cada uso gera várias ideias de conteúdo"
+      ]
+    },
+    {
       nome: "Plus",
       cor: "border-blue-500",
       beneficios: [
@@ -53,20 +76,6 @@ export default function Planos() {
         "Biblioteca de imagens",
         "Acesso a Meus Conteúdos",
         "Use a IA até 5 vezes por dia — cada uso gera várias ideias de conteúdo"
-      ]
-    },
-    {
-      nome: "Premium",
-      cor: "border-green-600 border-4 animate-pulse",
-      destaque: true,
-      beneficios: [
-        "Agendamentos ilimitados",
-        "Gerador de hashtag ilimitado",
-        "Central de Ideias ilimitada",
-        "Modo Tutor completo",
-        "Biblioteca de imagens",
-        "Acesso a Meus Conteúdos",
-        "Use a IA até 15 vezes por dia — cada uso gera várias ideias de conteúdo"
       ]
     }
   ];
@@ -132,21 +141,30 @@ export default function Planos() {
         {planos.map((plano, idx) => {
           const ativo = plano.nome === planoAtivo;
           const preco = precos[plano.nome][periodo];
+          const desconto = 
+            periodo === "anual"
+              ? descontos.anual[plano.nome]
+              : periodo === "trimestral"
+              ? descontos.trimestral
+              : null;
 
           return (
             <div
               key={idx}
-              className={`relative border-2 rounded-xl p-6 shadow-md ${plano.cor} ${
-                plano.destaque ? "bg-green-50" : ativo ? "bg-blue-50" : "bg-white"
+              className={`relative border-2 rounded-xl p-6 shadow-md ${plano.cor} transition-all duration-300 ${
+                plano.destaque ? "bg-green-50 border-4" : ativo ? "bg-blue-50" : "bg-white"
               }`}
             >
               {plano.destaque && (
-                <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+                <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded animate-fade-in">
                   MAIS POPULAR
                 </div>
               )}
               <h2 className="text-xl font-bold mb-2">{plano.nome}</h2>
-              <p className="text-lg font-semibold mb-4">{preco}</p>
+              <p className="text-lg font-semibold mb-1">{preco}</p>
+              {desconto && (
+                <p className="text-sm font-semibold text-green-600 mb-3">{desconto}</p>
+              )}
               <ul className="text-sm space-y-2 mb-6">
                 {plano.beneficios.map((b, i) => (
                   <li key={i} className="text-gray-700">• {b}</li>
@@ -170,4 +188,3 @@ export default function Planos() {
     </div>
   );
 }
-
