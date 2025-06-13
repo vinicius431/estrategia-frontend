@@ -3,16 +3,34 @@ import toast from "react-hot-toast";
 
 export default function Planos() {
   const [planoAtivo, setPlanoAtivo] = useState("Starter");
+  const [periodo, setPeriodo] = useState("mensal");
 
   useEffect(() => {
     const planoSalvo = localStorage.getItem("planoAtivo");
     if (planoSalvo) setPlanoAtivo(planoSalvo);
   }, []);
 
+  const precos = {
+    Starter: {
+      mensal: "R$49,90/mês",
+      trimestral: "R$149,97 (10% OFF)",
+      anual: "R$509,00 (15% OFF)"
+    },
+    Plus: {
+      mensal: "R$99,90/mês",
+      trimestral: "R$299,70 (10% OFF)",
+      anual: "R$1.018,98 (15% OFF)"
+    },
+    Premium: {
+      mensal: "R$129,90/mês",
+      trimestral: "R$350,73 (10% OFF)",
+      anual: "R$1.247,04 (20% OFF)"
+    }
+  };
+
   const planos = [
     {
       nome: "Starter",
-      preco: "R$49,90/mês",
       cor: "border-purple-500",
       beneficios: [
         "15 agendamentos por mês",
@@ -26,7 +44,6 @@ export default function Planos() {
     },
     {
       nome: "Plus",
-      preco: "R$99,90/mês",
       cor: "border-blue-500",
       beneficios: [
         "30 agendamentos por mês",
@@ -40,8 +57,8 @@ export default function Planos() {
     },
     {
       nome: "Premium",
-      preco: "R$129,90/mês",
       cor: "border-green-600",
+      destaque: true,
       beneficios: [
         "Agendamentos ilimitados",
         "Gerador de hashtag ilimitado",
@@ -50,8 +67,7 @@ export default function Planos() {
         "Biblioteca de imagens",
         "Acesso a Meus Conteúdos",
         "Use a IA até 15 vezes por dia — cada uso gera várias ideias de conteúdo"
-      ],
-      destaque: true
+      ]
     }
   ];
 
@@ -96,10 +112,27 @@ export default function Planos() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Escolha seu plano</h1>
+      <h1 className="text-2xl font-bold mb-4">Escolha seu plano</h1>
+
+      <div className="flex gap-3 mb-6">
+        {["mensal", "trimestral", "anual"].map((p) => (
+          <button
+            key={p}
+            onClick={() => setPeriodo(p)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold ${
+              periodo === p ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"
+            }`}
+          >
+            {p.charAt(0).toUpperCase() + p.slice(1)}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {planos.map((plano, idx) => {
           const ativo = plano.nome === planoAtivo;
+          const preco = precos[plano.nome][periodo];
+
           return (
             <div
               key={idx}
@@ -107,8 +140,13 @@ export default function Planos() {
                 plano.destaque ? "bg-green-50 border-4" : ativo ? "bg-blue-50" : "bg-white"
               }`}
             >
+              {plano.destaque && (
+                <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                  Mais popular
+                </div>
+              )}
               <h2 className="text-xl font-bold mb-2">{plano.nome}</h2>
-              <p className="text-lg font-semibold mb-4">{plano.preco}</p>
+              <p className="text-lg font-semibold mb-4">{preco}</p>
               <ul className="text-sm space-y-2 mb-6">
                 {plano.beneficios.map((b, i) => (
                   <li key={i} className="text-gray-700">• {b}</li>
