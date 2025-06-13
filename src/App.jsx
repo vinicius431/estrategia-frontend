@@ -55,7 +55,6 @@ function App() {
           <Route index element={<Home />} />
           <Route path="agendador" element={<Agendador />} />
           <Route path="tutor" element={<Tutor />} />
-          <Route path="analise" element={<Analise />} />
           <Route path="planos" element={<Planos />} />
           <Route path="biblioteca" element={<Biblioteca />} />
           <Route path="hashtags" element={<Hashtags />} />

@@ -73,10 +73,7 @@ export default function DashboardLayout() {
     { label: "Agendador", to: "/dashboard/agendador", icon: <Calendar size={18} /> },
     { label: "Central de Ideias", to: "/dashboard/central", icon: <Wand2 size={18} /> },
     {
-      label: "Análise Estratégica",
-      to: "/dashboard/analise",
-      icon: <LineChart size={18} />,
-      disabled: planoAtivo === "Free"
+    
     },
     {
       label: "Modo Tutor",
