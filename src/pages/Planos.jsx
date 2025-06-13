@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Planos() {
-  const [planoAtivo, setPlanoAtivo] = useState("Free");
+  const [planoAtivo, setPlanoAtivo] = useState("Starter");
 
   useEffect(() => {
     const planoSalvo = localStorage.getItem("planoAtivo");
@@ -11,48 +11,45 @@ export default function Planos() {
 
   const planos = [
     {
-      nome: "Free",
-      preco: "R$0/mês",
-      cor: "border-gray-300",
-      beneficios: [
-        "Agende até 5 conteúdos",
-        "Sem histórico de conteúdos",
-        "Sem Análise Estratégica",
-        "Sem Modo Tutor"
-      ]
-    },
-    {
       nome: "Starter",
       preco: "R$49,90/mês",
       cor: "border-purple-500",
       beneficios: [
-        "Agende até 25 conteúdos",
-        "Histórico de agendamentos",
-        "Com Análise Estratégica",
-        "Sem Modo Tutor"
+        "15 agendamentos por mês",
+        "Gerador de hashtag 1 vez por dia",
+        "Central de Ideias limitada",
+        "Sem Modo Tutor",
+        "Biblioteca de imagens",
+        "Acesso a Meus Conteúdos",
+        "Use a IA até 2 vezes por dia — cada uso gera várias ideias de conteúdo"
       ]
     },
     {
       nome: "Plus",
-      preco: "R$89,90/mês",
+      preco: "R$99,90/mês",
       cor: "border-blue-500",
       beneficios: [
-        "Agendamentos avançados",
-        "Análise Estratégica com IA",
+        "30 agendamentos por mês",
+        "Gerador de hashtag 5 vezes por dia",
+        "Central de Ideias ilimitada",
         "Modo Tutor limitado",
-        "2 reuniões/mês com especialistas"
+        "Biblioteca de imagens",
+        "Acesso a Meus Conteúdos",
+        "Use a IA até 5 vezes por dia — cada uso gera várias ideias de conteúdo"
       ]
     },
     {
       nome: "Premium",
-      preco: "R$119,90/mês",
+      preco: "R$129,90/mês",
       cor: "border-green-600",
       beneficios: [
         "Agendamentos ilimitados",
-        "IA personalizada",
+        "Gerador de hashtag ilimitado",
+        "Central de Ideias ilimitada",
         "Modo Tutor completo",
-        "1 reunião por semana",
-        "Comunidade privada"
+        "Biblioteca de imagens",
+        "Acesso a Meus Conteúdos",
+        "Use a IA até 15 vezes por dia — cada uso gera várias ideias de conteúdo"
       ],
       destaque: true
     }
@@ -100,7 +97,7 @@ export default function Planos() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Escolha seu plano</h1>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {planos.map((plano, idx) => {
           const ativo = plano.nome === planoAtivo;
           return (
