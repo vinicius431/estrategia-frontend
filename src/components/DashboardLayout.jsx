@@ -73,7 +73,11 @@ export default function DashboardLayout() {
     { label: "Agendador", to: "/dashboard/agendador", icon: <Calendar size={18} /> },
     { label: "Central de Ideias", to: "/dashboard/central", icon: <Wand2 size={18} /> },
     {
-    
+      label: "Tendências",
+      to: "#",
+      icon: <LineChart size={18} />,
+      badge: "Em breve",
+      disabled: true
     },
     {
       label: "Modo Tutor",
@@ -81,21 +85,11 @@ export default function DashboardLayout() {
       icon: <GraduationCap size={18} />,
       disabled: planoAtivo === "Free" || planoAtivo === "Starter"
     },
-    {
-      label: "Biblioteca", to: "/dashboard/biblioteca", icon: <Image size={18} />
-    },
-    {
-      label: "Hashtags", to: "/dashboard/hashtags", icon: <Hash size={18} />
-    },
-    {
-      label: "Meus Conteúdos", to: "/dashboard/meus-conteudos", icon: <LayoutGrid size={18} />
-    },
-    {
-      label: "Planos", to: "/dashboard/planos", icon: <BadgeDollarSign size={18} />, badge: planoAtivo
-    },
-    {
-      label: "Sair", to: "#", icon: <LogOut size={18} />, action: handleLogout
-    }
+    { label: "Biblioteca", to: "/dashboard/biblioteca", icon: <Image size={18} /> },
+    { label: "Hashtags", to: "/dashboard/hashtags", icon: <Hash size={18} /> },
+    { label: "Meus Conteúdos", to: "/dashboard/meus-conteudos", icon: <LayoutGrid size={18} /> },
+    { label: "Planos", to: "/dashboard/planos", icon: <BadgeDollarSign size={18} />, badge: planoAtivo },
+    { label: "Sair", to: "#", icon: <LogOut size={18} />, action: handleLogout }
   ];
 
   return (
@@ -127,7 +121,9 @@ export default function DashboardLayout() {
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className="bg-blue-500 text-xs px-2 py-0.5 rounded-full font-medium">
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  item.badge === "Em breve" ? "bg-gray-500" : "bg-blue-500"
+                }`}>
                   {item.badge}
                 </span>
               )}

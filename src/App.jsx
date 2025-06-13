@@ -14,7 +14,7 @@ import Hashtags from "./pages/Hashtags";
 import CentralIdeias from "./pages/CentralIdeias";
 import MeusConteudos from "./pages/MeusConteudos";
 import EditarAgendamento from "./pages/EditarAgendamento";
-
+import Tendencias from "./pages/Tendencias"; // ✅ NOVO
 
 // Páginas públicas
 import Politica from "./pages/Politica";
@@ -60,6 +60,7 @@ function App() {
           <Route path="meus-conteudos" element={<MeusConteudos />} />
           <Route path="central" element={<CentralIdeias />} />
           <Route path="editar/:id" element={<EditarAgendamento />} />
+          <Route path="tendencias" element={<Tendencias />} /> {/* ✅ NOVO */}
         </Route>
       </Routes>
     </Router>
