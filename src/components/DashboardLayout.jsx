@@ -62,10 +62,9 @@ export default function DashboardLayout() {
   };
 
   const agendamentosPermitidos = {
-    Free: 5,
-    Starter: 25,
-    Plus: 100,
-    Premium: Infinity
+    Starter: 15,
+    Plus: 30,
+    Premium: Ilimitado
   };
 
   const navItems = [
