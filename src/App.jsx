@@ -8,7 +8,6 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Agendador from "./pages/Agendador";
 import Tutor from "./pages/Tutor";
-import Analise from "./pages/Analise";
 import Planos from "./pages/Planos";
 import Biblioteca from "./pages/Biblioteca";
 import Hashtags from "./pages/Hashtags";
