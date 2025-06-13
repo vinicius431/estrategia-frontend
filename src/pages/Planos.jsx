@@ -57,7 +57,7 @@ export default function Planos() {
     },
     {
       nome: "Premium",
-      cor: "border-green-600",
+      cor: "border-green-600 border-4 animate-pulse",
       destaque: true,
       beneficios: [
         "Agendamentos ilimitados",
@@ -136,13 +136,13 @@ export default function Planos() {
           return (
             <div
               key={idx}
-              className={`border-2 rounded-xl p-6 shadow-md ${plano.cor} ${
-                plano.destaque ? "bg-green-50 border-4" : ativo ? "bg-blue-50" : "bg-white"
+              className={`relative border-2 rounded-xl p-6 shadow-md ${plano.cor} ${
+                plano.destaque ? "bg-green-50" : ativo ? "bg-blue-50" : "bg-white"
               }`}
             >
               {plano.destaque && (
-                <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  Mais popular
+                <div className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+                  MAIS POPULAR
                 </div>
               )}
               <h2 className="text-xl font-bold mb-2">{plano.nome}</h2>
@@ -170,3 +170,4 @@ export default function Planos() {
     </div>
   );
 }
+
