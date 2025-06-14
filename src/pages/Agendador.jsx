@@ -126,7 +126,7 @@ export default function Agendador() {
       function (response) {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
-          localStorage.setItem("facebook_token", accessToken);
+          
 
           window.FB.api("/me/accounts", function (pageResponse) {
             const page = pageResponse.data?.[0];
@@ -134,6 +134,7 @@ export default function Agendador() {
 
             const pageId = page.id;
             const pageAccessToken = page.access_token;
+            localStorage.setItem("facebook_token", pageAccessToken); // 🗝️ CORRETO!
 
             window.FB.api(
               `/${pageId}?fields=connected_instagram_account{name}`,
