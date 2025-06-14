@@ -37,9 +37,9 @@ export default function Agendador() {
   useEffect(() => {
     const verificarIntegracaoInstagram = async () => {
       try {
-        const res = await fetch(`${API_URL}/integracao/instagram`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        const res = await fetch(`${API_URL}/api/integracao/instagram`, {
+        headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
@@ -396,3 +396,5 @@ export default function Agendador() {
     </div>
   );
 }
+
+
