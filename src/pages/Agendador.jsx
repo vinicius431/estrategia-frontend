@@ -122,66 +122,81 @@ export default function Agendador() {
   };
 
   const handleLoginFacebook = () => {
-    window.FB.login(
-      function (response) {
-        if (response.authResponse) {
-          const accessToken = response.authResponse.accessToken;
-          
+  window.FB.login(
+    function (response) {
+      if (response.authResponse) {
+        // 🔑 Token curto de USUÁRIO (NÃO É O DE PÁGINA)
+        const shortUserToken = response.authResponse.accessToken;
 
-          window.FB.api("/me/accounts", function (pageResponse) {
-            const page = pageResponse.data?.[0];
-            if (!page) return console.log("❌ Nenhuma página encontrada");
+        // ✅ Agora pega a Página
+        window.FB.api("/me/accounts", function (pageResponse) {
+          const page = pageResponse.data?.[0];
+          if (!page) return console.log("❌ Nenhuma página encontrada");
 
-            const pageId = page.id;
-            const pageAccessToken = page.access_token;
-            localStorage.setItem("facebook_token", pageAccessToken); // 🗝️ CORRETO!
+          const pageId = page.id;
+          const pageAccessToken = page.access_token; // 🗝️ ESSE É O CORRETO
 
-            window.FB.api(
-              `/${pageId}?fields=connected_instagram_account{name}`,
-              function (instaResponse) {
-                if (instaResponse.connected_instagram_account) {
-                  const igId = instaResponse.connected_instagram_account.id;
-                  const igName = instaResponse.connected_instagram_account.name;
+          // 👉 Salva o PAGE ACCESS TOKEN (não o curto)
+          localStorage.setItem("facebook_token", pageAccessToken);
 
-                  setConectado(true);
-                  setNomeUsuario(igName || "Perfil conectado");
+          // Pega o Instagram Business conectado
+          window.FB.api(
+            `/${pageId}?fields=connected_instagram_account{name}`,
+            function (instaResponse) {
+              if (instaResponse.connected_instagram_account) {
+                const igId = instaResponse.connected_instagram_account.id;
+                const igName = instaResponse.connected_instagram_account.name;
 
-                  fetch(`${API_URL}/api/integracao/instagram`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({
-                      instagramAccessToken: pageAccessToken,
-                      instagramBusinessId: igId,
-                      facebookPageId: pageId,
-                      instagramName: igName,
-                    }),
+                setConectado(true);
+                setNomeUsuario(igName || "Perfil conectado");
+
+                // ✅ Salva tudo no backend
+                fetch(`${API_URL}/api/integracao/instagram`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                  body: JSON.stringify({
+                    instagramAccessToken: pageAccessToken, // page token correto
+                    instagramBusinessId: igId,
+                    facebookPageId: pageId,
+                    instagramName: igName,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log("📥 Dados salvos no backend:", data);
                   })
-                    .then((res) => res.json())
-                    .then((data) => {
-                      console.log("📥 Dados salvos no backend:", data);
-                    })
-                    .catch((err) => {
-                      console.error("❌ Erro ao salvar integração:", err);
-                    });
-                } else {
-                  console.log("❌ Nenhuma conta do Instagram conectada à página.");
-                }
+                  .catch((err) => {
+                    console.error("❌ Erro ao salvar integração:", err);
+                  });
+              } else {
+                console.log("❌ Nenhuma conta do Instagram conectada à página.");
               }
-            );
-          });
-        } else {
-          console.log("❌ Login cancelado ou sem autorização");
-        }
-      },
-      {
-        scope:
-          "pages_show_list,instagram_basic,instagram_content_publish,pages_read_engagement",
+            }
+          );
+        });
+      } else {
+        console.log("❌ Login cancelado ou sem autorização");
       }
-    );
-  };
+    },
+    {
+      // 🚨 Scope COMPLETO recomendado pela Meta (pra API v18+)
+      scope: [
+        "public_profile",
+        "email",
+        "pages_show_list",
+        "pages_read_engagement",
+        "pages_manage_posts",
+        "instagram_basic",
+        "instagram_content_publish",
+        "instagram_manage_insights"
+      ].join(","),
+    }
+  );
+};
+
 
   const handleImagem = (e) => {
     const file = e.target.files[0];
