@@ -64,7 +64,7 @@ export default function DashboardLayout() {
   const agendamentosPermitidos = {
     Starter: 15,
     Plus: 30,
-    Premium: Ilimitado
+    Premium: Infinity
   };
 
   const navItems = [
