@@ -372,48 +372,41 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
           {mensagem}
         </div>
       )}
+<div className="bg-[#0d1b25] p-6 rounded-xl shadow-md text-white space-y-6">
+  {renderStep()}
 
-      <div className="bg-[#0d1b25] p-6 rounded-xl shadow-md text-white space-y-6">
-        {renderStep()}
-        <div className="flex justify-between">
-          {step > 1 && (
-            <button
-              onClick={() => setStep(step - 1)}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-              disabled={loading}
-            >
-              Voltar
-            </button>
-          )}
-          {step < 3 ? (
-            <button
-              onClick={() => setStep(step + 1)}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-              disabled={loading}
-            >
-              Próximo
-            </button>
-          ) : (
-            <button
-              onClick={handleSubmit}
-              className={`px-6 py-2 rounded text-white transition ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
-              }`}
-              disabled={loading}
-            >
-              {loading ? "Agendando..." : "Agendar"}
-            </button>
-          )}
+  <div className="flex justify-between">
+    {step > 1 && (
+      <button
+        onClick={() => setStep(step - 1)}
+        className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+        disabled={loading}
+      >
+        Voltar
+      </button>
+    )}
 
-          <button
-            onClick={handlePostarInstagram}
-            className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-4"
-            disabled={loading}
-          >
-            {loading ? "Publicando..." : "Postar Agora no Instagram"}
-          </button>
+    {step < 3 && (
+      <button
+        onClick={() => setStep(step + 1)}
+        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 ml-auto"
+        disabled={loading}
+      >
+        Próximo
+      </button>
+    )}
+
+    {step === 3 && (
+      <button
+        onClick={handlePostarInstagram}
+        className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-auto"
+        disabled={loading}
+      >
+        {loading ? "Publicando..." : "Postar Agora no Instagram"}
+      </button>
+    )}
+           </div>
+         </div>
         </div>
-      </div>
-    </div>
   );
 }

@@ -16,6 +16,11 @@ const usuarioSchema = new mongoose.Schema({
   tokenExpiresAt: { type: Date },
   instagramName: { type: String }, // ✅ Nome do perfil do Instagram conectado
   paginaAccessToken: String,
+
+  // ✅ Campos de controle de uso por plano
+  agendamentosUsadosMes: { type: Number, default: 0 },
+  iaInputsHoje: { type: Number, default: 0 },
+  hashtagsHoje: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model("Usuario", usuarioSchema);
