@@ -37,9 +37,6 @@ export default function Agendador() {
   useEffect(() => {
     const verificarIntegracaoInstagram = async () => {
       try {
-
-        console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
-
         const res = await fetch(`${API_URL}/integracao/instagram`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -49,7 +46,6 @@ export default function Agendador() {
         if (!res.ok) return;
 
         const data = await res.json();
-
         if (data.instagramBusinessId && data.instagramAccessToken) {
           setConectado(true);
           setNomeUsuario("Perfil conectado ✅");
@@ -74,9 +70,6 @@ export default function Agendador() {
     try {
       const formData = new FormData();
       formData.append("file", imagem);
-      
-      console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
-
 
       const uploadRes = await fetch(`${API_URL}/upload`, {
         method: "POST",
@@ -88,22 +81,15 @@ export default function Agendador() {
 
       const uploadData = await uploadRes.json();
 
-if (!uploadRes.ok || !uploadData.url) {
-  setMensagem("❌ Falha no upload da imagem/vídeo.");
-  setLoading(false);
-  return;
-}
+      if (!uploadRes.ok || !uploadData.url) {
+        setMensagem("❌ Falha no upload da mídia.");
+        setLoading(false);
+        return;
+      }
 
-const midiaUrl = uploadData.url;
-const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
-
-console.log("▶️ Publicando com dados:");
-console.log("Legenda:", `${descricao}\n\n${cta}\n\n${hashtags}`);
-console.log("midiaUrl:", midiaUrl);
-console.log("tipo:", tipo);
-
-
-console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
+      const midiaUrl = uploadData.url;
+      const tipo = imagem.type.startsWith("video") ? "VIDEO" : "IMAGE";
+      const userAccessToken = localStorage.getItem("facebook_token");
 
       const publicarRes = await fetch(`${API_URL}/api/instagram/publicar`, {
         method: "POST",
@@ -115,11 +101,12 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
           legenda: `${descricao}\n\n${cta}\n\n${hashtags}`,
           midiaUrl,
           tipo,
+          userAccessToken,
         }),
       });
 
       const data = await publicarRes.json();
-     console.log("📡 Resposta da API:", publicarRes.status, data);
+      console.log("📡 Resposta da API:", publicarRes.status, data);
 
       if (publicarRes.ok) {
         setMensagem("✅ Publicado no Instagram com sucesso!");
@@ -139,6 +126,7 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
       function (response) {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
+          localStorage.setItem("facebook_token", accessToken);
 
           window.FB.api("/me/accounts", function (pageResponse) {
             const page = pageResponse.data?.[0];
@@ -153,12 +141,9 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
                 if (instaResponse.connected_instagram_account) {
                   const igId = instaResponse.connected_instagram_account.id;
                   const igName = instaResponse.connected_instagram_account.name;
-                  console.log("✅ Instagram conectado:", igId);
 
                   setConectado(true);
                   setNomeUsuario(igName || "Perfil conectado");
-
-                  console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
 
                   fetch(`${API_URL}/api/integracao/instagram`, {
                     method: "POST",
@@ -176,7 +161,6 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
                     .then((res) => res.json())
                     .then((data) => {
                       console.log("📥 Dados salvos no backend:", data);
-                      console.log("🔍 Retorno da integração:", data);
                     })
                     .catch((err) => {
                       console.error("❌ Erro ao salvar integração:", err);
@@ -250,7 +234,7 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
         } else {
           setMensagem("❌ Erro ao agendar: " + (data?.erro || "Erro desconhecido."));
         }
-      } catch (jsonErr) {
+      } catch {
         setMensagem("❌ Erro inesperado: " + text);
       }
     } catch (err) {
@@ -372,41 +356,42 @@ console.log("🎟️ Token sendo enviado:", localStorage.getItem("token"));
           {mensagem}
         </div>
       )}
-<div className="bg-[#0d1b25] p-6 rounded-xl shadow-md text-white space-y-6">
-  {renderStep()}
 
-  <div className="flex justify-between">
-    {step > 1 && (
-      <button
-        onClick={() => setStep(step - 1)}
-        className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-        disabled={loading}
-      >
-        Voltar
-      </button>
-    )}
+      <div className="bg-[#0d1b25] p-6 rounded-xl shadow-md text-white space-y-6">
+        {renderStep()}
 
-    {step < 3 && (
-      <button
-        onClick={() => setStep(step + 1)}
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 ml-auto"
-        disabled={loading}
-      >
-        Próximo
-      </button>
-    )}
+        <div className="flex justify-between">
+          {step > 1 && (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              disabled={loading}
+            >
+              Voltar
+            </button>
+          )}
 
-    {step === 3 && (
-      <button
-        onClick={handlePostarInstagram}
-        className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-auto"
-        disabled={loading}
-      >
-        {loading ? "Publicando..." : "Postar Agora no Instagram"}
-      </button>
-    )}
-           </div>
-         </div>
+          {step < 3 && (
+            <button
+              onClick={() => setStep(step + 1)}
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 ml-auto"
+              disabled={loading}
+            >
+              Próximo
+            </button>
+          )}
+
+          {step === 3 && (
+            <button
+              onClick={handlePostarInstagram}
+              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-auto"
+              disabled={loading}
+            >
+              {loading ? "Publicando..." : "Postar Agora no Instagram"}
+            </button>
+          )}
         </div>
+      </div>
+    </div>
   );
 }
