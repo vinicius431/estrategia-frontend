@@ -178,6 +178,7 @@ export default function Agendador() {
       {
         scope:
           "pages_show_list,instagram_basic,instagram_content_publish,pages_read_engagement",
+          auth_type: "reauthenticate"
       }
     );
   };
