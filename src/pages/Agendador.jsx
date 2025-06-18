@@ -336,7 +336,7 @@ export default function Agendador() {
     }
   };
 
-  return (
+   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Agendador de Conteúdo 📅</h1>
 
@@ -386,18 +386,25 @@ export default function Agendador() {
           )}
 
           {step === 3 && (
-            <button
-              onClick={handlePostarInstagram}
-              className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 ml-auto"
-              disabled={loading}
-            >
-              {loading ? "Publicando..." : "Postar Agora no Instagram"}
-            </button>
+            <div className="flex gap-3 ml-auto">
+              <button
+                onClick={handlePostarInstagram}
+                className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
+                disabled={loading}
+              >
+                {loading ? "Publicando..." : "Postar Agora no Instagram"}
+              </button>
+
+              <button
+                onClick={() => window.location.href = "/meus-conteudos"}
+                className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+              >
+                Ver Meus Conteúdos
+              </button>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 }
-
-
