@@ -11,9 +11,9 @@ export default function MeusConteudos() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAgendados = async () => {
+    const fetchPosts = async () => {
       try {
-        const res = await fetch(`${API_URL}/agendamentos`, {
+        const res = await fetch(`${API_URL}/posts`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -31,11 +31,13 @@ export default function MeusConteudos() {
       }
     };
 
-    fetchAgendados();
+    fetchPosts();
   }, []);
 
   const handleExcluir = async (id) => {
-    const confirmacao = confirm("Tem certeza que deseja excluir este agendamento?");
+    const confirmacao = confirm(
+      "Tem certeza que deseja excluir este conteúdo?"
+    );
     if (!confirmacao) return;
 
     try {
@@ -108,6 +110,7 @@ export default function MeusConteudos() {
             <option value="todos">Todos</option>
             <option value="agendado">Agendados</option>
             <option value="postado">Postados</option>
+            <option value="instagram">Instagram</option>
           </select>
         </div>
       </div>
@@ -140,17 +143,31 @@ export default function MeusConteudos() {
                   className={`text-xs font-medium px-2 py-1 rounded-full ${
                     item.status === "agendado"
                       ? "bg-yellow-100 text-yellow-800"
-                      : "bg-green-100 text-green-800"
+                      : item.status === "postado"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-blue-100 text-blue-800"
                   }`}
                 >
                   {item.status}
                 </span>
                 <div className="flex gap-3">
                   <button
-                    onClick={() => navigate(`/dashboard/editar/${item._id}`)}
+                    onClick={() =>
+                      navigate(
+                        `/agendador?titulo=${encodeURIComponent(
+                          item.titulo || ""
+                        )}&descricao=${encodeURIComponent(
+                          item.descricao || ""
+                        )}&cta=${encodeURIComponent(item.cta || "")}&hashtags=${encodeURIComponent(
+                          item.hashtags || ""
+                        )}&id=${item._id}&midiaUrl=${encodeURIComponent(
+                          item.imagem || ""
+                        )}`
+                      )
+                    }
                     className="text-blue-600 text-sm hover:underline"
                   >
-                    Editar
+                    Editar no Agendador
                   </button>
                   <button
                     onClick={() => handleExcluir(item._id)}
