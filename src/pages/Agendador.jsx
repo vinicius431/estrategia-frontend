@@ -109,10 +109,16 @@ export default function Agendador() {
       console.log("📡 Resposta da API:", publicarRes.status, data);
 
       if (publicarRes.ok) {
-        setMensagem("✅ Publicado no Instagram com sucesso!");
-      } else {
-        setMensagem("❌ Erro ao publicar: " + (data?.erro || "Erro desconhecido."));
-      }
+  setMensagem("✅ Publicado no Instagram com sucesso!");
+  setTimeout(() => {
+    window.location.href = "/meus-conteudos";
+  }, 1200); // espera 1.2s pro usuário ver o sucesso
+} else {
+  setMensagem("❌ Erro ao publicar: " + (data?.erro || "Erro desconhecido."));
+}
+
+
+      
     } catch (err) {
       console.error(err);
       setMensagem("❌ Erro ao conectar com o servidor.");
