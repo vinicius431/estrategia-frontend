@@ -13,7 +13,8 @@ export default function MeusConteudos() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`${API_URL}/posts`, {
+        const res = await fetch(`${API_URL}/agendamentos`, {
+
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
