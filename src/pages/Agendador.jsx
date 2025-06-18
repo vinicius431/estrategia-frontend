@@ -399,7 +399,7 @@ export default function Agendador() {
     </button>
 
     <button
-      onClick={() => navigate("/meus-conteudos")}
+      onClick={() => navigate("/dashboard/meus-conteudos")}
       className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
               >
                 Ver Meus Conteúdos
