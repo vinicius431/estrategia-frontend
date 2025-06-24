@@ -24,6 +24,9 @@ export default function Agendador() {
   const [previewImg, setPreviewImg] = useState(null);
   const [mensagem, setMensagem] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paginas, setPaginas] = useState([]);
+  const [paginaSelecionada, setPaginaSelecionada] = useState(null);
+
 
   const [conectado, setConectado] = useState(false);
   const [nomeUsuario, setNomeUsuario] = useState("");
@@ -127,67 +130,35 @@ export default function Agendador() {
   };
 
   const handleLoginFacebook = () => {
-    window.FB.login(
-      function (response) {
-        if (response.authResponse) {
-          const accessToken = response.authResponse.accessToken;
+  window.FB.login(
+    function (response) {
+      if (response.authResponse) {
+        const accessToken = response.authResponse.accessToken;
 
-          window.FB.api("/me/accounts", function (pageResponse) {
-            const page = pageResponse.data?.[0];
-            if (!page) return console.log("❌ Nenhuma página encontrada");
+        // Salva token global para futuras chamadas se precisar
+        localStorage.setItem("facebook_login_token", accessToken);
 
-            const pageId = page.id;
-            const pageAccessToken = page.access_token;
-            localStorage.setItem("facebook_token", pageAccessToken); // 🗝️ CORRETO!
+        // Pega TODAS as páginas — mas NÃO conecta ainda
+        window.FB.api("/me/accounts", function (pageResponse) {
+          const listaPaginas = pageResponse.data;
+          if (!listaPaginas || listaPaginas.length === 0) {
+            console.log("❌ Nenhuma página encontrada");
+            return;
+          }
 
-            window.FB.api(
-              `/${pageId}?fields=connected_instagram_account{name}`,
-              function (instaResponse) {
-                if (instaResponse.connected_instagram_account) {
-                  const igId = instaResponse.connected_instagram_account.id;
-                  const igName = instaResponse.connected_instagram_account.name;
-
-                  setConectado(true);
-                  setNomeUsuario(igName || "Perfil conectado");
-
-                  fetch(`${API_URL}/api/integracao/instagram`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({
-                      instagramAccessToken: pageAccessToken,
-                      instagramBusinessId: igId,
-                      facebookPageId: pageId,
-                      instagramName: igName,
-                    }),
-                  })
-                    .then((res) => res.json())
-                    .then((data) => {
-                      console.log("📥 Dados salvos no backend:", data);
-                    })
-                    .catch((err) => {
-                      console.error("❌ Erro ao salvar integração:", err);
-                    });
-                } else {
-                  console.log("❌ Nenhuma conta do Instagram conectada à página.");
-                }
-              }
-            );
-          });
-        } else {
-          console.log("❌ Login cancelado ou sem autorização");
-        }
-      },
-      {
-        
-          scope: "pages_show_list,instagram_basic,instagram_content_publish,pages_read_engagement,pages_manage_posts",
-
-          auth_type: "reauthenticate"
+          setPaginas(listaPaginas); // Mostra lista pro usuário
+        });
+      } else {
+        console.log("❌ Login cancelado ou sem autorização");
       }
-    );
-  };
+    },
+    {
+      scope: "pages_show_list,instagram_basic,instagram_content_publish,pages_read_engagement,pages_manage_posts",
+      auth_type: "reauthenticate",
+    }
+  );
+};
+
 
   const handleImagem = (e) => {
     const file = e.target.files[0];
@@ -357,6 +328,73 @@ export default function Agendador() {
           </div>
         )}
       </div>
+
+
+
+{/* ✅ SELETOR DE PÁGINAS — COLOQUE AQUI */}
+{paginas.length > 0 && (
+  <div className="mb-4 p-4 bg-gray-800 rounded">
+    <h3 className="text-lg mb-2">Escolha uma Página:</h3>
+    {paginas.map((page) => (
+      <button
+        key={page.id}
+        onClick={async () => {
+          window.FB.api(
+            `/${page.id}?fields=connected_instagram_account{name}`,
+            function (instaResponse) {
+              if (instaResponse.connected_instagram_account) {
+                const igId = instaResponse.connected_instagram_account.id;
+                const igName = instaResponse.connected_instagram_account.name;
+
+                setPaginaSelecionada({
+                  id: page.id,
+                  name: page.name,
+                  access_token: page.access_token,
+                  igId,
+                  igName,
+                });
+
+                localStorage.setItem("facebook_token", page.access_token);
+                localStorage.setItem("pagina_id", page.id);
+                localStorage.setItem("instagram_id", igId);
+
+                setConectado(true);
+                setNomeUsuario(igName || "Perfil conectado ✅");
+
+                fetch(`${API_URL}/api/integracao/instagram`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                  body: JSON.stringify({
+                    instagramAccessToken: page.access_token,
+                    instagramBusinessId: igId,
+                    facebookPageId: page.id,
+                    instagramName: igName,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    console.log("📥 Dados salvos no backend:", data);
+                  })
+                  .catch((err) => {
+                    console.error("❌ Erro ao salvar integração:", err);
+                  });
+              } else {
+                console.log("❌ Nenhuma conta do Instagram conectada à página.");
+              }
+            }
+          );
+        }}
+        className="block bg-blue-600 text-white px-4 py-2 rounded mb-2 hover:bg-blue-700"
+      >
+        {page.name}
+      </button>
+    ))}
+  </div>
+)}
+
 
       {mensagem && (
         <div className="mb-4 p-3 rounded text-sm bg-blue-100 text-blue-800 border border-blue-300">
